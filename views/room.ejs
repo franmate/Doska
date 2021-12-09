@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="assets/styles.css">
+    <script src="/socket.io/socket.io.js" defer></script>
+    <script src="jquery-3.6.0.min.js" defer></script>
+    <script src="fabric.min.js" defer></script>
+    <script src="main.js" defer></script>
+    <script>
+        const ROOM_ID = "<%= roomId %>"
+    </script>
+    <!-- <script>
+        const username = window.prompt("Привет! Введи твоё имя:");
+        socket.emit('new user', username);
+    </script> -->
+    <title>Лист</title>
+    <link rel="icon" href="assets/favicon.svg">
+</head>
+<body class="body">
+    <!-- <div id="waitShield">
+        <p id="waitMessage">Ожидайте разрешения входа на доску</p>
+    </div> -->
+
+    <div class="container unreachable">
+
+        <div id="canvasWrapper">
+            <canvas id="c" style="position: relative; top: 0; bottom: 0; left: 0; right: 0; z-index: 2;"></canvas>
+        </div>
+
+        <div class="dockPanel">
+            <div class="main-tools">
+                <div class="tools canvasHistory">
+                    <button type="button" class="undo" onclick="undo()"></button>
+                    <button type="button" class="redo" onclick="redo()"></button>
+                </div>
+                <div class="tools brushSection">
+                    <button type="button" class="select" id="select" onclick="changeAction(this)"></button>
+                    <button type="button" class="pen" id="brush" onclick="changeAction(this)"></button>
+                    <button type="button" class="eraser" id="erase" onclick="changeAction(this)"></button>
+                    <button type="button" class="clear" onclick="clearCanvas()"></button>
+                    <!-- <button class="shapes"></button> -->
+                </div>
+                <div class="tools canvasControlls">
+                    <div class="uploader-container">
+                        <input name="file" type="file" id="uploader" accept="image/png, image/gif, image/jpeg"/>
+                        <label for="uploader" class="uploader-button"></label>
+                    </div>
+                    <button class="image"></button>
+                </div>
+                <div class="tools brushSettings">
+                    <button class="colors"></button>
+                    <button class="size"></button>
+                    <button class="paper"></button>
+                </div>
+            </div>
+            <div class="tools addShape">
+                <button class="rectangle" id="shapeRect"></button>
+                <button class="circle" id="shapeCircle"></button>
+            </div>
+            <div class="tools brushSize size-btns">
+                <button class="small size-active" onclick="setBrush({width: 3})"></button>
+                <button class="middle" onclick="setBrush({width: 5})"></button>
+                <button class="big" onclick="setBrush({width: 10})"></button>
+            </div>
+            <div class="tools brushColors color-btns">
+                <button class="color-bt active black" data-value="#000000">­</button>
+                <button class="color-bt red" data-value="#D01919">­</button>
+                <button class="color-bt yellow" data-value="#EAAE00">­</button>
+                <button class="color-bt green" data-value="#16AB39">­</button>
+                <button class="color-bt blue" data-value="#1678C2">­</button>
+                <input type="color" class="button color-input" id="brushColor">
+            </div>
+            <div class="tools canvasBackground">
+                <button class="none">­</button>
+                <button class="sq">­</button>
+                <button class="line">­</button>
+                <button class="dot">­</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
