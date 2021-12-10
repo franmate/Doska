@@ -88,6 +88,16 @@ $canvas.width(w).height(h);
 canvas.setHeight(h);
 canvas.setWidth(w);
 
+// Background
+canvas.backgroundColor = 'white';
+
+setTimeout(() => {
+    canvas.setBackgroundColor({
+        source: '/assets/patterns/pattern_none.svg',
+        repeat: 'repeat'
+    }, canvas.renderAll.bind(canvas));
+}, 100);
+
 changeAction('brush');
 
 // undo redo command history
@@ -432,22 +442,34 @@ socket.on('postman', function (cmd) {
         canvas.clear().renderAll();
         newleft = 0;
     } else if (newCommand == "none") {
-        $('#c').css('background-image','url(../assets/patterns/pattern_none.svg)');
+        canvas.setBackgroundColor({
+            source: '/assets/patterns/pattern_none.svg',
+            repeat: 'repeat'
+        }, canvas.renderAll.bind(canvas));
         $('.paper').css('background-image','url(../assets/icons/rect.svg)');
         $(".bcgr-btns button").removeClass('active');
         $(this).addClass('active');
     } else if (newCommand == "sq") {
-        $('#c').css('background-image','url(../assets/patterns/pattern_sq.svg)');
+        canvas.setBackgroundColor({
+            source: '/assets/patterns/pattern_sq.svg',
+            repeat: 'repeat'
+        }, canvas.renderAll.bind(canvas));
         $('.paper').css('background-image','url(../assets/icons/sq.svg)');
         $(".bcgr-btns button").removeClass('active');
         $(this).addClass('active');
     } else if (newCommand == "line") {
-        $('#c').css('background-image','url(../assets/patterns/pattern_line.svg)');
+        canvas.setBackgroundColor({
+            source: '/assets/patterns/pattern_line.svg',
+            repeat: 'repeat'
+        }, canvas.renderAll.bind(canvas));
         $('.paper').css('background-image','url(../assets/icons/line.svg)');
         $(".bcgr-btns button").removeClass('active');
         $(this).addClass('active');
     } else if (newCommand == "dot") {
-        $('#c').css('background-image','url(../assets/patterns/pattern_dot.svg)');
+        canvas.setBackgroundColor({
+            source: '/assets/patterns/pattern_dot.svg',
+            repeat: 'repeat'
+        }, canvas.renderAll.bind(canvas));
         $('.paper').css('background-image','url(../assets/icons/dot.svg)');
         $(".bcgr-btns button").removeClass('active');
         $(this).addClass('active');
@@ -542,28 +564,40 @@ $('.paper').click(function(){
     }
 });
 $('.none').click(function(){
-    $('#c').css('background-image','url(../assets/patterns/pattern_none.svg)');
+    canvas.setBackgroundColor({
+        source: '/assets/patterns/pattern_none.svg',
+        repeat: 'repeat'
+    }, canvas.renderAll.bind(canvas));
     $('.paper').css('background-image','url(../assets/icons/rect.svg)');
     $(".bcgr-btns button").removeClass('active');
     $(this).addClass('active');
     goPostman("none");
 });
 $('.sq').click(function(){
-    $('#c').css('background-image','url(../assets/patterns/pattern_sq.svg)');
+    canvas.setBackgroundColor({
+        source: '/assets/patterns/pattern_sq.svg',
+        repeat: 'repeat'
+    }, canvas.renderAll.bind(canvas));
     $('.paper').css('background-image','url(../assets/icons/sq.svg)');
     $(".bcgr-btns button").removeClass('active');
     $(this).addClass('active');
     goPostman("sq");
 });
 $('.line').click(function(){
-    $('#c').css('background-image','url(../assets/patterns/pattern_line.svg)');
+    canvas.setBackgroundColor({
+        source: '/assets/patterns/pattern_line.svg',
+        repeat: 'repeat'
+    }, canvas.renderAll.bind(canvas));
     $('.paper').css('background-image','url(../assets/icons/line.svg)');
     $(".bcgr-btns button").removeClass('active');
     $(this).addClass('active');
     goPostman("line");
 });
 $('.dot').click(function(){
-    $('#c').css('background-image','url(../assets/patterns/pattern_dot.svg)');
+    canvas.setBackgroundColor({
+        source: '/assets/patterns/pattern_dot.svg',
+        repeat: 'repeat'
+    }, canvas.renderAll.bind(canvas));
     $('.paper').css('background-image','url(../assets/icons/dot.svg)');
     $(".bcgr-btns button").removeClass('active');
     $(this).addClass('active');

@@ -130,10 +130,6 @@ button {
     cursor: pointer;
     transition: 0.3s;
 }
-button:hover {
-    box-shadow: 4px 4px 0px 0px #93c2ff44;
-    transition: 0.3s;
-}
 button:active {
     background-color: #31a7ff;
     box-shadow: none;
