@@ -80,7 +80,7 @@ body {
     align-items: center;
     justify-content: center;
     position: fixed;
-    bottom: -17px;
+    bottom: -4px;
     left: 0;
     right: 0;
     z-index: 10;
@@ -97,7 +97,7 @@ body {
 .main-tools {
     padding: 10px 10px 20px 10px;
     display: flex;
-    overflow-x: scroll;
+    overflow-x: auto;
     overflow-y: hidden;
 }
 
