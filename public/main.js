@@ -128,12 +128,6 @@ canvas.on("object:modified", function () {
     undo_history.push(JSON.stringify(canvas));
     redo_history.length = 0;
     // console.log(undo_history.length);
-
-    var objects = canvas.getObjects();
-    let newObject = objects.length - 1;
-    objectName = (Math.random()).toString().substring(2, 17);
-    objects[newObject].name = objectName;
-    originalName = objects[newObject].name;
 });
 
 sourceObject = "";
@@ -141,17 +135,31 @@ canvas.on("object:moving", function() {
     activeObject = canvas.getActiveObjects();
     sourceObject = activeObject[0].name;
 });
+canvas.on("object:moved", function() {
+    objectName = (Math.random()).toString().substring(2, 17);
+    activeObject[0].name = objectName;
+    originalName = activeObject[0].name;
 
-let emitAccess = false;
+    emitModified();
+});
+canvas.on("object:scaled", function() {
+    objectName = (Math.random()).toString().substring(2, 17);
+    activeObject[0].name = objectName;
+    originalName = activeObject[0].name;
+
+    emitModified();
+});
+canvas.on("object:rotated", function() {
+    objectName = (Math.random()).toString().substring(2, 17);
+    activeObject[0].name = objectName;
+    originalName = activeObject[0].name;
+
+    emitModified();
+});
+
 canvas.on("mouse:up", function() {
-    let activeObject = canvas.getActiveObjects();
-    let activeObjectCount = activeObject.length;
     if (canvas.isDrawingMode === true) {
         emitEvent();
-    } else if ((canvas.isDrawingMode === false) && (emitAccess === true) && (activeObjectCount > 0)) {
-        emitModified();
-    } else if ((canvas.isDrawingMode === false) && (emitAccess === false)) {
-        emitAccess = true;
     }
 });
 
