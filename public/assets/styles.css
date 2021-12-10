@@ -20,6 +20,10 @@
         url("./fonts/MPLUSRounded1c-Medium.woff") format("woff");
 }
 
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -74,23 +78,27 @@ body {
 .dockPanel {
     display: flex;
     align-items: center;
+    justify-content: center;
     position: fixed;
-    bottom: 20px;
+    bottom: -17px;
     left: 0;
     right: 0;
     z-index: 10;
-    justify-content: center;
 }
 .tools {
     margin: 0px 10px;
     padding: 10px;
     z-index: 3;
+    display: flex;
     background-color: #ffffff;
     border-radius: 20px;
     box-shadow: 3px 2px 10px #d4d1d1, -2px -2px 10px #fcfcfc;
 }
 .main-tools {
+    padding: 10px 10px 20px 10px;
     display: flex;
+    overflow-x: scroll;
+    overflow-y: hidden;
 }
 
 .brushColors {
@@ -123,7 +131,7 @@ button {
     transition: 0.3s;
 }
 button:hover {
-    box-shadow: 4px 4px 0px 0px #a8cdff44;
+    box-shadow: 4px 4px 0px 0px #93c2ff44;
     transition: 0.3s;
 }
 button:active {
@@ -134,6 +142,9 @@ button:active {
 .active {
     background-color: #70d7ff;
     box-shadow: 4px 4px 0px 0px #97a7ff44;
+}
+.canvasControlls {
+    width: 52px;
 }
 
 .undo {
@@ -257,7 +268,6 @@ input[type="color"]::-webkit-color-swatch {
     display: none;
 }
 .uploader-button {
-    position: absolute;
     margin: 6px;
     width: 40px;
     height: 40px;
