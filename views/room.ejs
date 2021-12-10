@@ -56,28 +56,24 @@
                     <button class="paper"></button>
                 </div>
             </div>
-            <div class="tools addShape">
-                <button class="rectangle" id="shapeRect"></button>
-                <button class="circle" id="shapeCircle"></button>
-            </div>
             <div class="tools brushSize size-btns">
-                <button class="small size-active" onclick="setBrush({width: 3})"></button>
-                <button class="middle" onclick="setBrush({width: 5})"></button>
+                <button class="small" onclick="setBrush({width: 3})"></button>
+                <button class="middle active" onclick="setBrush({width: 5})"></button>
                 <button class="big" onclick="setBrush({width: 10})"></button>
             </div>
             <div class="tools brushColors color-btns">
-                <button class="color-bt active black" data-value="#000000">­</button>
-                <button class="color-bt red" data-value="#D01919">­</button>
-                <button class="color-bt yellow" data-value="#EAAE00">­</button>
-                <button class="color-bt green" data-value="#16AB39">­</button>
-                <button class="color-bt blue" data-value="#1678C2">­</button>
+                <button class="color-bt black active" data-value="#000000"></button>
+                <button class="color-bt red" data-value="#D01919"></button>
+                <button class="color-bt yellow" data-value="#EAAE00"></button>
+                <button class="color-bt green" data-value="#16AB39"></button>
+                <button class="color-bt blue" data-value="#1678C2"></button>
                 <input type="color" class="button color-input" id="brushColor">
             </div>
-            <div class="tools canvasBackground">
-                <button class="none">­</button>
-                <button class="sq">­</button>
-                <button class="line">­</button>
-                <button class="dot">­</button>
+            <div class="tools canvasBackground bcgr-btns">
+                <button class="none active"></button>
+                <button class="sq"></button>
+                <button class="line"></button>
+                <button class="dot"></button>
             </div>
         </div>
     </div>

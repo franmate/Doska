@@ -23,18 +23,6 @@ fabric.Canvas.prototype.getItemByName = function(name) {
     }
     return object;
 };
-fabric.Canvas.prototype.getItemByPrev = function(prev) {
-    var object = null,
-        objects = this.getObjects();
-  
-    for (var i = 0, len = this.size(); i < len; i++) {
-        if (objects[i].prev && objects[i].prev === prev) {
-            object = objects[i];
-            break;
-        }
-    }
-    return object;
-};
 
 function changeAction(target) {
     ['select','erase','brush'].forEach(action => {
@@ -109,51 +97,30 @@ var redo_history = [];
 undo_history.push(JSON.stringify(canvas));
 originalName = "";
 
-canvas.on("object:added", function () {
+canvas.on("object:added", function (e) {
     if (lockHistory) return;
     // console.log("object:added");
     undo_history.push(JSON.stringify(canvas));
     redo_history.length = 0;
     // console.log(undo_history.length);
-
-    var objects = canvas.getObjects();
-    let newObject = objects.length - 1;
-    objectName = (Math.random()).toString().substring(2, 17);
-    objects[newObject].name = objectName;
-    originalName = objects[newObject].name;
+    if (e.target.name === undefined) {
+        let objectName = (Math.random()).toString().substring(2, 17);
+        e.target.set('name', objectName);
+        originalName = objectName;
+    }
 });
-canvas.on("object:modified", function () {
+canvas.on("object:modified", function (e) {
     if (lockHistory) return;
     // console.log("object:modified");
     undo_history.push(JSON.stringify(canvas));
     redo_history.length = 0;
     // console.log(undo_history.length);
-});
 
-sourceObject = "";
-canvas.on("object:moving", function() {
-    activeObject = canvas.getActiveObjects();
-    sourceObject = activeObject[0].name;
-});
-canvas.on("object:moved", function() {
-    objectName = (Math.random()).toString().substring(2, 17);
-    activeObject[0].name = objectName;
-    originalName = activeObject[0].name;
-
-    emitModified();
-});
-canvas.on("object:scaled", function() {
-    objectName = (Math.random()).toString().substring(2, 17);
-    activeObject[0].name = objectName;
-    originalName = activeObject[0].name;
-
-    emitModified();
-});
-canvas.on("object:rotated", function() {
-    objectName = (Math.random()).toString().substring(2, 17);
-    activeObject[0].name = objectName;
-    originalName = activeObject[0].name;
-
+    if (e.target.name === undefined) {
+        let objectName = (Math.random()).toString().substring(2, 17);
+        e.target.set('name', objectName);
+        originalName = objectName;
+    }
     emitModified();
 });
 
@@ -289,7 +256,91 @@ function cloneObject() {
     }
 }
 
-// socket
+$(window)
+    .on('resize', function () {
+        w = div.width();
+        h = div.height();
+        canvas.setHeight(h);
+        canvas.setWidth(w);
+        $canvas.width(w).height(h);
+    })
+    .on('keydown', function (e) {
+        if (e.keyCode === 46) { //delete key
+            deleteObjects();
+        }
+    });
+
+function setBrush(options) {
+    if (options.width !== undefined) {
+        canvas.freeDrawingBrush.width = parseInt(options.width, 10);
+    }
+
+    if (options.color !== undefined) {
+        canvas.freeDrawingBrush.color = options.color;
+    }
+}
+
+// Set Brush Size
+$(".size-btns button").on('click', function () {
+    $(".size-btns button").removeClass('active');
+    $(this).addClass('active');
+});
+
+// Set brush color
+$(".color-btns button").on('click', function () {
+    let val = $(this).data('value');
+    activeColor = val;
+    $("#brushColor").val(val);
+    setBrush({color: val});
+});
+
+$("#brushColor").on('change', function () {
+    let val = $(this).val();
+    activeColor = val;
+    setBrush({color: val});
+});
+
+// Pan
+function startPan(event) {
+    if (event.button != 2) {
+        return;
+    }
+    var x0 = event.screenX,
+        y0 = event.screenY;
+    function continuePan(event) {
+        var x = event.screenX,
+            y = event.screenY;
+        canvas.relativePan({ x: x - x0, y: y - y0 });
+        x0 = x;
+        y0 = y;
+    }
+    function stopPan(event) {
+        $(window).off('mousemove', continuePan);
+        $(window).off('mouseup', stopPan);
+    };
+    $(window).mousemove(continuePan);
+    $(window).mouseup(stopPan);
+    $(window).contextmenu(cancelMenu);
+};
+function cancelMenu() {
+    $(window).off('contextmenu', cancelMenu);
+    return false;
+}
+$(canvasWrapper).mousedown(startPan);
+
+// Zoom
+canvas.on('mouse:wheel', function(opt) {
+    var delta = opt.e.deltaY;
+    var zoom = canvas.getZoom();
+    zoom *= 0.999 ** delta;
+    if (zoom > 1) zoom = 1;
+    if (zoom < 0.01) zoom = 0.01;
+    canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+    opt.e.preventDefault();
+    opt.e.stopPropagation();
+  });
+
+// Socket
 let lastObj = canvas.item(canvas.size() - 1);
 function emitEvent() {
     let newObj = canvas.item(canvas.size() - 1);
@@ -311,8 +362,7 @@ function emitModified() {
     let data = {
         name: originalName,
         json: json,
-        modified: "true",
-        prev: sourceObject
+        modified: "true"
     };
     socket.emit('drawing', data);
     lastObj = newObj;
@@ -331,17 +381,18 @@ function goPostman(listenCommand) {
 }
 
 socket.on('drawing', function (obj) {
+    let modified = obj.modified;
+    let objectName = obj.name;
+    if (modified === "true") {
+        canvas.remove(canvas.getItemByName(objectName));
+        canvas.renderAll();
+    }
     let jsonObj = JSON.parse(obj.json);
     fabric.util.enlivenObjects([jsonObj], function (enlivenedObjects) {
-        enlivenedObjects[0].prev = obj.name
+        enlivenedObjects[0].name = obj.name
         canvas.add(enlivenedObjects[0]);
         canvas.renderAll();
     });
-    let modified = obj.modified;
-    let previousName = obj.prev;
-    if (modified === "true") {
-        canvas.remove(canvas.getItemByPrev(previousName));
-    }
 });
 
 socket.on('get canvas', function (obj) {
@@ -383,19 +434,27 @@ socket.on('postman', function (cmd) {
     } else if (newCommand == "none") {
         $('#c').css('background-image','url(../assets/patterns/pattern_none.svg)');
         $('.paper').css('background-image','url(../assets/icons/rect.svg)');
+        $(".bcgr-btns button").removeClass('active');
+        $(this).addClass('active');
     } else if (newCommand == "sq") {
         $('#c').css('background-image','url(../assets/patterns/pattern_sq.svg)');
         $('.paper').css('background-image','url(../assets/icons/sq.svg)');
+        $(".bcgr-btns button").removeClass('active');
+        $(this).addClass('active');
     } else if (newCommand == "line") {
         $('#c').css('background-image','url(../assets/patterns/pattern_line.svg)');
         $('.paper').css('background-image','url(../assets/icons/line.svg)');
+        $(".bcgr-btns button").removeClass('active');
+        $(this).addClass('active');
     } else if (newCommand == "dot") {
         $('#c').css('background-image','url(../assets/patterns/pattern_dot.svg)');
         $('.paper').css('background-image','url(../assets/icons/dot.svg)');
+        $(".bcgr-btns button").removeClass('active');
+        $(this).addClass('active');
     }
 });
 
-// dock panel
+// Dock panel
 let menuToggle = false;
 
 $('.shapes').click(function(){
@@ -431,19 +490,19 @@ $('.color-input').hover(function(){
     menuToggle = true;
 });
 $('.black').click(function(){
-    $('.colors, .pen, .shapes, .rectangle, .circle').css('background-color','#7a7a7a44');
+    $('.colors').css('background-color','#b8b8b8');
 });
 $('.red').click(function(){
-    $('.colors, .pen, .shapes, .rectangle, .circle').css('background-color','#ff6a6444');
+    $('.colors').css('background-color','#ff4b4b');
 });
 $('.yellow').click(function(){
-    $('.colors, .pen, .shapes, .rectangle, .circle').css('background-color','#ffde4b44');
+    $('.colors').css('background-color','#ffab2c');
 });
 $('.green').click(function(){
-    $('.colors, .pen, .shapes, .rectangle, .circle').css('background-color','#2dff6144');
+    $('.colors').css('background-color','#1dcf46');
 });
 $('.blue').click(function(){
-    $('.colors, .pen, .shapes, .rectangle, .circle').css('background-color','#50a2ff44');
+    $('.colors').css('background-color','#25a1ff');
 });
 
 $('.size').click(function(){
@@ -485,21 +544,29 @@ $('.paper').click(function(){
 $('.none').click(function(){
     $('#c').css('background-image','url(../assets/patterns/pattern_none.svg)');
     $('.paper').css('background-image','url(../assets/icons/rect.svg)');
+    $(".bcgr-btns button").removeClass('active');
+    $(this).addClass('active');
     goPostman("none");
 });
 $('.sq').click(function(){
     $('#c').css('background-image','url(../assets/patterns/pattern_sq.svg)');
     $('.paper').css('background-image','url(../assets/icons/sq.svg)');
+    $(".bcgr-btns button").removeClass('active');
+    $(this).addClass('active');
     goPostman("sq");
 });
 $('.line').click(function(){
     $('#c').css('background-image','url(../assets/patterns/pattern_line.svg)');
     $('.paper').css('background-image','url(../assets/icons/line.svg)');
+    $(".bcgr-btns button").removeClass('active');
+    $(this).addClass('active');
     goPostman("line");
 });
 $('.dot').click(function(){
     $('#c').css('background-image','url(../assets/patterns/pattern_dot.svg)');
     $('.paper').css('background-image','url(../assets/icons/dot.svg)');
+    $(".bcgr-btns button").removeClass('active');
+    $(this).addClass('active');
     goPostman("dot");
 });
 
