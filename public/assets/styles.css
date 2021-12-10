@@ -104,17 +104,17 @@ body {
 .brushColors {
     display: none;
     position: absolute;
-    bottom: 90px;
+    bottom: 111px;
 }
 .brushSize {
     display: none;
     position: absolute;
-    bottom: 90px;
+    bottom: 111px;
 }
 .canvasBackground {
     display: none;
     position: absolute;
-    bottom: 90px;
+    bottom: 111px;
 }
 
 button {
