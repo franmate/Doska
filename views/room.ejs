@@ -30,6 +30,13 @@
             <canvas id="c" style="position: relative; top: 0; bottom: 0; left: 0; right: 0; z-index: 2;"></canvas>
         </div>
 
+        <div style="width: 128px; position: fixed; top: 0px; left: 0px; z-index: 10; transform: scale(0.5); cursor: pointer;">
+            <img src="assets/joystick/joystick-base.png"/>
+            <div id="stick" style="position: absolute; left:32px; top:32px;">
+            <img src="assets/joystick/joystick-blue.png"/>
+            </div>
+        </div>
+
         <div class="dockPanel">
             <div class="main-tools">
                 <div class="tools canvasHistory">
@@ -41,7 +48,6 @@
                     <button type="button" class="pen" id="brush" onclick="changeAction(this)"></button>
                     <button type="button" class="eraser" id="erase" onclick="changeAction(this)"></button>
                     <button type="button" class="clear" onclick="clearCanvas()"></button>
-                    <!-- <button class="shapes"></button> -->
                 </div>
                 <div class="tools canvasControlls">
                     <input name="file" type="file" id="uploader" accept="image/png, image/gif, image/jpeg"/>
