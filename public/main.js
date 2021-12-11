@@ -24,6 +24,9 @@ fabric.Canvas.prototype.getItemByName = function(name) {
     return object;
 };
 
+let widthOption = 5;
+let colorOption = 'black';
+
 function changeAction(target) {
     ['select','erase','brush'].forEach(action => {
         const t = document.getElementById(action);
@@ -42,7 +45,8 @@ function changeAction(target) {
             break;
         case "brush":
             canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-            canvas.freeDrawingBrush.width = 5;
+            canvas.freeDrawingBrush.width = widthOption;
+            canvas.freeDrawingBrush.color = colorOption;
             canvas.isDrawingMode = true;
             break;
         default:
@@ -88,50 +92,32 @@ $canvas.width(w).height(h);
 canvas.setHeight(h);
 canvas.setWidth(w);
 
-// Background
-canvas.backgroundColor = 'white';
-
-setTimeout(() => {
-    canvas.setBackgroundColor({
-        source: '/assets/patterns/pattern_none.svg',
-        repeat: 'repeat'
-    }, canvas.renderAll.bind(canvas));
-}, 100);
-
 changeAction('brush');
 
 // undo redo command history
 var lockHistory = false;
 var undo_history = [];
 var redo_history = [];
-undo_history.push(JSON.stringify(canvas));
-originalName = "";
+undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
 
 canvas.on("object:added", function (e) {
     if (lockHistory) return;
-    // console.log("object:added");
-    undo_history.push(JSON.stringify(canvas));
-    redo_history.length = 0;
-    // console.log(undo_history.length);
     if (e.target.name === undefined) {
         let objectName = (Math.random()).toString().substring(2, 17);
         e.target.set('name', objectName);
-        originalName = objectName;
     }
+    undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
+    redo_history.length = 0;
+    // console.log(undo_history.length);
+    // console.log(e.target.name + ' is added')
 });
-canvas.on("object:modified", function (e) {
+canvas.on("object:modified", function () {
     if (lockHistory) return;
-    // console.log("object:modified");
-    undo_history.push(JSON.stringify(canvas));
+    undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
     redo_history.length = 0;
     // console.log(undo_history.length);
-
-    if (e.target.name === undefined) {
-        let objectName = (Math.random()).toString().substring(2, 17);
-        e.target.set('name', objectName);
-        originalName = objectName;
-    }
     emitModified();
+    // console.log(e.target.name + ' is modified')
 });
 
 canvas.on("mouse:up", function() {
@@ -165,6 +151,9 @@ function redo() {
     }
 }
 function clearCanvas() {
+    if (lockHistory) return;
+    undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
+    redo_history.length = 0;
     canvas.clear().renderAll();
     newleft = 0;
     goPostman("clear");
@@ -217,6 +206,9 @@ function deleteObject(eventData, transform) {
     let activeGroup = canvas.getActiveObjects();
 
     if (activeGroup) {
+        if (lockHistory) return;
+        undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
+        redo_history.length = 0;
         canvas.discardActiveObject();
         activeGroup.forEach(function (object) {
             canvas.remove(object);
@@ -235,6 +227,7 @@ function cloneObject() {
                 canvas.setActiveObject(clonedImg);
             });
             canvas.renderAll();
+            emitEvent();
         });
     } else {
         canvas.getActiveObject().clone(function(cloned) {
@@ -262,6 +255,7 @@ function cloneObject() {
             _clipboard.left += 20;
             canvas.setActiveObject(clonedObj);
             canvas.requestRenderAll();
+            emitEvent();
         });
     }
 }
@@ -283,10 +277,12 @@ $(window)
 function setBrush(options) {
     if (options.width !== undefined) {
         canvas.freeDrawingBrush.width = parseInt(options.width, 10);
+        widthOption = parseInt(options.width, 10);
     }
 
     if (options.color !== undefined) {
         canvas.freeDrawingBrush.color = options.color;
+        colorOption = options.color;
     }
 }
 
@@ -497,34 +493,27 @@ let lastObj = canvas.item(canvas.size() - 1);
 function emitEvent() {
     let newObj = canvas.item(canvas.size() - 1);
     if (newObj != lastObj) {
-        let json = JSON.stringify(newObj);
+        let json = JSON.stringify(newObj.toJSON(['name']));
         let data = {
-            name: originalName,
             json: json,
             modified: "false"
         };
         socket.emit('drawing', data);
         lastObj = newObj;
+        // console.log('new is emited' + ' ' + newObj.name);
     }
 }
 
 function emitModified() {
     let newObj = canvas.getActiveObject();
-    let json = JSON.stringify(newObj);
+    let json = JSON.stringify(newObj.toJSON(['name']));
     let data = {
-        name: originalName,
         json: json,
         modified: "true"
     };
     socket.emit('drawing', data);
     lastObj = newObj;
-}
-
-function getPrevious() {
-    let data = {
-        data: JSON.stringify(canvas.toDatalessJSON())
-    };
-    socket.emit('previous', data);
+    // console.log('modified is emited' + ' ' + newObj.name);
 }
 
 function goPostman(listenCommand) {
@@ -533,17 +522,17 @@ function goPostman(listenCommand) {
 }
 
 socket.on('drawing', function (obj) {
+    let jsonObj = JSON.parse(obj.json);
+    let objectName = jsonObj.name;
     let modified = obj.modified;
-    let objectName = obj.name;
     if (modified === "true") {
         canvas.remove(canvas.getItemByName(objectName));
         canvas.renderAll();
     }
-    let jsonObj = JSON.parse(obj.json);
     fabric.util.enlivenObjects([jsonObj], function (enlivenedObjects) {
-        enlivenedObjects[0].name = obj.name
         canvas.add(enlivenedObjects[0]);
         canvas.renderAll();
+        // console.log(objectName + ' ' + obj.modified);
     });
 });
 
@@ -553,7 +542,7 @@ socket.on('get canvas', function (obj) {
 
 socket.on('get requester', requesterID => {
     let data = {
-        data: JSON.stringify(canvas.toDatalessJSON())
+        data: JSON.stringify(canvas.toJSON(['name']))
     };
     socket.emit('send canvas', requesterID, data);
 })
@@ -581,37 +570,36 @@ socket.on('postman', function (cmd) {
             });
         }
     } else if (newCommand == "clear") {
+        if (lockHistory) return;
+        undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
+        redo_history.length = 0;
         canvas.clear().renderAll();
         newleft = 0;
     } else if (newCommand == "none") {
-        canvas.setBackgroundColor({
-            source: '/assets/patterns/pattern_none.svg',
-            repeat: 'repeat'
-        }, canvas.renderAll.bind(canvas));
+        canvas.setBackgroundColor({source: '/assets/patterns/pattern_none.svg', repeat: 'repeat'}, function () {
+            canvas.renderAll();
+        });
         $('.paper').css('background-image','url(../assets/icons/rect.svg)');
         $(".bcgr-btns button").removeClass('active');
         $(this).addClass('active');
     } else if (newCommand == "sq") {
-        canvas.setBackgroundColor({
-            source: '/assets/patterns/pattern_sq.svg',
-            repeat: 'repeat'
-        }, canvas.renderAll.bind(canvas));
+        canvas.setBackgroundColor({source: '/assets/patterns/pattern_sq.svg', repeat: 'repeat'}, function () {
+            canvas.renderAll();
+        });
         $('.paper').css('background-image','url(../assets/icons/sq.svg)');
         $(".bcgr-btns button").removeClass('active');
         $(this).addClass('active');
     } else if (newCommand == "line") {
-        canvas.setBackgroundColor({
-            source: '/assets/patterns/pattern_line.svg',
-            repeat: 'repeat'
-        }, canvas.renderAll.bind(canvas));
+        canvas.setBackgroundColor({source: '/assets/patterns/pattern_line.svg', repeat: 'repeat'}, function () {
+            canvas.renderAll();
+        });
         $('.paper').css('background-image','url(../assets/icons/line.svg)');
         $(".bcgr-btns button").removeClass('active');
         $(this).addClass('active');
     } else if (newCommand == "dot") {
-        canvas.setBackgroundColor({
-            source: '/assets/patterns/pattern_dot.svg',
-            repeat: 'repeat'
-        }, canvas.renderAll.bind(canvas));
+        canvas.setBackgroundColor({source: '/assets/patterns/pattern_dot.svg', repeat: 'repeat'}, function () {
+            canvas.renderAll();
+        });
         $('.paper').css('background-image','url(../assets/icons/dot.svg)');
         $(".bcgr-btns button").removeClass('active');
         $(this).addClass('active');
@@ -706,40 +694,36 @@ $('.paper').click(function(){
     }
 });
 $('.none').click(function(){
-    canvas.setBackgroundColor({
-        source: '/assets/patterns/pattern_none.svg',
-        repeat: 'repeat'
-    }, canvas.renderAll.bind(canvas));
+    canvas.setBackgroundColor({source: '/assets/patterns/pattern_none.svg', repeat: 'repeat'}, function () {
+        canvas.renderAll();
+    });
     $('.paper').css('background-image','url(../assets/icons/rect.svg)');
     $(".bcgr-btns button").removeClass('active');
     $(this).addClass('active');
     goPostman("none");
 });
 $('.sq').click(function(){
-    canvas.setBackgroundColor({
-        source: '/assets/patterns/pattern_sq.svg',
-        repeat: 'repeat'
-    }, canvas.renderAll.bind(canvas));
+    canvas.setBackgroundColor({source: '/assets/patterns/pattern_sq.svg', repeat: 'repeat'}, function () {
+        canvas.renderAll();
+    });
     $('.paper').css('background-image','url(../assets/icons/sq.svg)');
     $(".bcgr-btns button").removeClass('active');
     $(this).addClass('active');
     goPostman("sq");
 });
 $('.line').click(function(){
-    canvas.setBackgroundColor({
-        source: '/assets/patterns/pattern_line.svg',
-        repeat: 'repeat'
-    }, canvas.renderAll.bind(canvas));
+    canvas.setBackgroundColor({source: '/assets/patterns/pattern_line.svg', repeat: 'repeat'}, function () {
+        canvas.renderAll();
+    });
     $('.paper').css('background-image','url(../assets/icons/line.svg)');
     $(".bcgr-btns button").removeClass('active');
     $(this).addClass('active');
     goPostman("line");
 });
 $('.dot').click(function(){
-    canvas.setBackgroundColor({
-        source: '/assets/patterns/pattern_dot.svg',
-        repeat: 'repeat'
-    }, canvas.renderAll.bind(canvas));
+    canvas.setBackgroundColor({source: '/assets/patterns/pattern_dot.svg', repeat: 'repeat'}, function () {
+        canvas.renderAll();
+    });
     $('.paper').css('background-image','url(../assets/icons/dot.svg)');
     $(".bcgr-btns button").removeClass('active');
     $(this).addClass('active');
