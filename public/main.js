@@ -116,7 +116,11 @@ canvas.on("object:modified", function () {
     undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
     redo_history.length = 0;
     // console.log(undo_history.length);
-    emitModified();
+    if ((canvas.getActiveObject().type === 'activeSelection') || (canvas.getActiveObject().type === 'group')) {
+        emitGroup();
+    } else {
+        emitModified();
+    }
     // console.log(e.target.name + ' is modified')
 });
 
@@ -124,6 +128,33 @@ canvas.on("mouse:up", function() {
     if (canvas.isDrawingMode === true) {
         emitEvent();
     }
+});
+
+canvas.on("selection:created", function() {
+    if (!canvas.getActiveObject()) {
+        return;
+    }
+    if (canvas.getActiveObject().type !== 'activeSelection') {
+        return;
+    }
+    canvas.getActiveObject().toGroup();
+    canvas.requestRenderAll();
+});
+// canvas.on("selection:updated", function() {
+//     console.log("selecion updated");
+// });
+// canvas.on("selection:cleared", function() {
+//     console.log("selecion cleared");
+// });
+canvas.on("before:selection:cleared", function() {
+    if (!canvas.getActiveObject()) {
+        return;
+    }
+    if (canvas.getActiveObject().type !== 'group') {
+        return;
+    }
+    canvas.getActiveObject().toActiveSelection();
+    canvas.requestRenderAll();
 });
 
 function undo() {
@@ -161,13 +192,13 @@ function clearCanvas() {
 
 // duplicate delete buttons
 var deleteIcon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-circle-x' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Ccircle cx='12' cy='12' r='9' /%3E%3Cpath d='M10 10l4 4m0 -4l-4 4' /%3E%3C/svg%3E";
-var cloneIcon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-copy' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Crect x='8' y='8' width='12' height='12' rx='2' /%3E%3Cpath d='M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2' /%3E%3C/svg%3E"
+// var cloneIcon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-copy' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Crect x='8' y='8' width='12' height='12' rx='2' /%3E%3Cpath d='M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2' /%3E%3C/svg%3E"
 
 var deleteImg = document.createElement('img');
 deleteImg.src = deleteIcon;
 
-var cloneImg = document.createElement('img');
-cloneImg.src = cloneIcon;
+// var cloneImg = document.createElement('img');
+// cloneImg.src = cloneIcon;
 
 function renderIcon(icon) {
     return function renderIcon(ctx, left, top, styleOverride, fabricObject) {
@@ -191,18 +222,21 @@ fabric.Object.prototype.controls.deleteControl = new fabric.Control({
     cornerSize: 24
 });
 
-fabric.Object.prototype.controls.clone = new fabric.Control({
-    x: -0.5,
-    y: -0.5,
-    offsetY: -16,
-    offsetX: -16,
-    cursorStyle: 'pointer',
-    mouseUpHandler: cloneObject,
-    render: renderIcon(cloneImg),
-    cornerSize: 24
-});
+// fabric.Object.prototype.controls.clone = new fabric.Control({
+//     x: -0.5,
+//     y: -0.5,
+//     offsetY: -16,
+//     offsetX: -16,
+//     cursorStyle: 'pointer',
+//     mouseUpHandler: cloneObject,
+//     render: renderIcon(cloneImg),
+//     cornerSize: 24
+// });
 
 function deleteObject(eventData, transform) {
+    if (canvas.getActiveObject().type === 'group') {
+        canvas.getActiveObject().toActiveSelection();
+    }
     let activeGroup = canvas.getActiveObjects();
 
     if (activeGroup) {
@@ -211,12 +245,14 @@ function deleteObject(eventData, transform) {
         redo_history.length = 0;
         canvas.discardActiveObject();
         activeGroup.forEach(function (object) {
+            goPostman(object.name)
             canvas.remove(object);
         });
     }
 }
 
 function cloneObject() {
+    canvas.getActiveObject().toActiveSelection();
     if(canvas.getActiveObject().get('type')==="image") {
         var copyData = canvas.getActiveObject().toObject();
         fabric.util.enlivenObjects([copyData], function(objects) {
@@ -253,9 +289,9 @@ function cloneObject() {
             }
             _clipboard.top -= 20;
             _clipboard.left += 20;
-            canvas.setActiveObject(clonedObj);
+            canvas.setActiveObject(clonedObj).toGroup();
             canvas.requestRenderAll();
-            emitEvent();
+            emitGroup();
         });
     }
 }
@@ -463,11 +499,13 @@ var intervalId;
 var panStick = document.getElementById('stick');
 
 panStick.addEventListener('pointerdown', (event) => {
+    canvas.isDrawingMode = false;
     clearInterval(intervalId);
     intervalId = setInterval(update, 1);
 });
 panStick.addEventListener('pointerup', (event) => {
     clearInterval(intervalId);
+    canvas.isDrawingMode = true;
 });
 
 function update() {
@@ -496,6 +534,7 @@ function emitEvent() {
         let json = JSON.stringify(newObj.toJSON(['name']));
         let data = {
             json: json,
+            grouped: "false",
             modified: "false"
         };
         socket.emit('drawing', data);
@@ -509,11 +548,25 @@ function emitModified() {
     let json = JSON.stringify(newObj.toJSON(['name']));
     let data = {
         json: json,
+        grouped: "false",
         modified: "true"
     };
     socket.emit('drawing', data);
     lastObj = newObj;
     // console.log('modified is emited' + ' ' + newObj.name);
+}
+
+function emitGroup() {
+    let newObj = canvas.getActiveObject();
+    let json = JSON.stringify(newObj.toJSON(['name']));
+    let data = {
+        json: json,
+        grouped: "true",
+        modified: "false"
+    };
+    socket.emit('drawing', data);
+    lastObj = newObj;
+    // console.log('group is emited' + ' ' + newObj.name);
 }
 
 function goPostman(listenCommand) {
@@ -523,17 +576,28 @@ function goPostman(listenCommand) {
 
 socket.on('drawing', function (obj) {
     let jsonObj = JSON.parse(obj.json);
-    let objectName = jsonObj.name;
-    let modified = obj.modified;
-    if (modified === "true") {
-        canvas.remove(canvas.getItemByName(objectName));
+    if (obj.modified === "true") {
+        canvas.remove(canvas.getItemByName(jsonObj.name));
         canvas.renderAll();
     }
-    fabric.util.enlivenObjects([jsonObj], function (enlivenedObjects) {
-        canvas.add(enlivenedObjects[0]);
-        canvas.renderAll();
-        // console.log(objectName + ' ' + obj.modified);
-    });
+    if (obj.grouped === "false") {
+        fabric.util.enlivenObjects([jsonObj], function (enlivenedObjects) {
+            canvas.add(enlivenedObjects[0]);
+            canvas.renderAll();
+            // console.log(jsonObj.name + ' ' + obj.modified);
+        });
+    } else if (obj.grouped === "true") {
+        fabric.util.enlivenObjects([jsonObj], function (enlivenedObjects) {
+            canvas.add(enlivenedObjects[0]);
+            canvas.setActiveObject(enlivenedObjects[0]);
+            canvas.getActiveObject().toActiveSelection();
+            canvas.getActiveObjects().forEach(element => canvas.remove(canvas.getItemByName(element.name)));
+            canvas.discardActiveObject();
+            canvas.requestRenderAll();
+            // console.log(jsonObj.name + ' ' + obj.modified);
+            // console.log('ungrouped')
+        });
+    }
 });
 
 socket.on('get canvas', function (obj) {
@@ -603,6 +667,8 @@ socket.on('postman', function (cmd) {
         $('.paper').css('background-image','url(../assets/icons/dot.svg)');
         $(".bcgr-btns button").removeClass('active');
         $(this).addClass('active');
+    } else {
+        canvas.remove(canvas.getItemByName(newCommand));
     }
 });
 
