@@ -606,11 +606,15 @@ socket.on('drawing', function (obj) {
 
 socket.on('get canvas', function (obj) {
     canvas.loadFromJSON(obj.data);
+    undo_history = obj.undo;
+    redo_history = obj.redo;
 });
 
 socket.on('get requester', requesterID => {
     let data = {
-        data: JSON.stringify(canvas.toJSON(['name']))
+        data: JSON.stringify(canvas.toJSON(['name'])),
+        undo: undo_history,
+        redo: redo_history
     };
     socket.emit('send canvas', requesterID, data);
 })
