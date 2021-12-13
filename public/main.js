@@ -100,28 +100,32 @@ var undo_history = [];
 var redo_history = [];
 undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
 
-canvas.on("object:added", function (e) {
+function story() {
     if (lockHistory) return;
+    undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
+    redo_history.length = 0;
+};
+
+canvas.on("object:added", function (e) {
     if (e.target.name === undefined) {
         let objectName = (Math.random()).toString().substring(2, 17);
         e.target.set('name', objectName);
     }
-    undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
-    redo_history.length = 0;
     // console.log(undo_history.length);
     // console.log(e.target.name + ' is added')
 });
+canvas.on("path:created", function (e) {
+    story();
+});
 canvas.on("object:modified", function () {
-    if (lockHistory) return;
-    undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
-    redo_history.length = 0;
     // console.log(undo_history.length);
     if ((canvas.getActiveObject().type === 'activeSelection') || (canvas.getActiveObject().type === 'group')) {
         emitGroup();
     } else {
         emitModified();
     }
-    // console.log(e.target.name + ' is modified')
+    story();
+    // console.log(e.target.name + ' is modified');
 });
 
 canvas.on("mouse:up", function() {
@@ -182,9 +186,7 @@ function redo() {
     }
 }
 function clearCanvas() {
-    if (lockHistory) return;
-    undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
-    redo_history.length = 0;
+    story();
     canvas.clear().renderAll();
     newleft = 0;
     goPostman("clear");
@@ -248,6 +250,7 @@ function deleteObject(eventData, transform) {
             goPostman(object.name)
             canvas.remove(object);
         });
+        goPostman("deleteEnding");
     }
 }
 
@@ -598,6 +601,7 @@ socket.on('drawing', function (obj) {
             // console.log('ungrouped')
         });
     }
+    story();
 });
 
 socket.on('get canvas', function (obj) {
@@ -667,6 +671,8 @@ socket.on('postman', function (cmd) {
         $('.paper').css('background-image','url(../assets/icons/dot.svg)');
         $(".bcgr-btns button").removeClass('active');
         $(this).addClass('active');
+    } else if (newCommand == "deleteEnding") {
+        story();
     } else {
         canvas.remove(canvas.getItemByName(newCommand));
     }
