@@ -1,7 +1,7 @@
 {
   "name": "list",
   "version": "1.0.0",
-  "description": "List — one application for teachers and students",
+  "description": "List — drawing application with rooms",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -20,7 +20,7 @@
   "dependencies": {
     "compression": "^1.7.4",
     "ejs": "^3.1.6",
-    "express": "^4.17.1",
+    "express": "^4.17.2",
     "socket.io": "^4.4.0",
     "uuid": "^8.3.2"
   }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -9,19 +9,20 @@
     <script src="jquery-3.6.0.min.js" defer></script>
     <script src="fabric.min.js" defer></script>
     <script src="main.js" defer></script>
+    <script src="pan.js" defer></script>
     <script>
         const ROOM_ID = "<%= roomId %>"
     </script>
     <!-- <script>
-        const username = window.prompt("Привет! Введи твоё имя:");
+        const username = window.prompt("Hello! Type your name:");
         socket.emit('new user', username);
     </script> -->
-    <title>Лист</title>
+    <title>List</title>
     <link rel="icon" href="assets/favicon.svg">
 </head>
 <body class="body">
     <!-- <div id="waitShield">
-        <p id="waitMessage">Ожидайте разрешения входа на доску</p>
+        <p id="waitMessage">Please wait</p>
     </div> -->
 
     <div class="container unreachable">
@@ -40,19 +41,19 @@
         <div class="dockPanel">
             <div class="main-tools">
                 <div class="tools canvasHistory">
-                    <button type="button" class="undo" onclick="undo()"></button>
-                    <button type="button" class="redo" onclick="redo()"></button>
+                    <button type="button" class="undo" onclick="undo(), goPostman('undo')"></button>
+                    <button type="button" class="redo" onclick="redo(), goPostman('redo')"></button>
                 </div>
                 <div class="tools brushSection">
                     <button type="button" class="select" id="select" onclick="changeAction(this)"></button>
                     <button type="button" class="pen" id="brush" onclick="changeAction(this)"></button>
                     <button type="button" class="eraser" id="erase" onclick="changeAction(this)"></button>
-                    <button type="button" class="clear" onclick="clearCanvas()"></button>
+                    <button type="button" class="clear" onclick="clearCanvas(), goPostman('clear')"></button>
                 </div>
-                <div class="tools canvasControlls">
+                <!-- <div class="tools canvasControlls">
                     <input name="file" type="file" id="uploader" accept="image/png, image/gif, image/jpeg"/>
                     <label for="uploader" class="uploader-button"></label>
-                </div>
+                </div> -->
                 <div class="tools brushSettings">
                     <button class="colors"></button>
                     <button class="size"></button>

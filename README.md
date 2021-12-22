@@ -1,2 +1,5 @@
 # List
-List — one application for teachers and students
+Drawing application with rooms
+
+* Fabric.js
+* Socket.io
