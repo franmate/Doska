@@ -101,38 +101,42 @@ var redo_history = [];
 undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
 
 function story() {
+    let newObj = canvas.item(canvas.size() - 1);
     if (lockHistory) return;
-    undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
+    undo_history.push(JSON.stringify(newObj.toJSON(['name'])));
     redo_history.length = 0;
-};
+}
 
 canvas.on("object:added", function (e) {
     if (e.target.name === undefined) {
         let objectName = (Math.random()).toString().substring(2, 17);
         e.target.set('name', objectName);
     }
-    // console.log(undo_history.length);
-    // console.log(e.target.name + ' is added')
 });
-canvas.on("path:created", function (e) {
+canvas.on("path:created", function () {
     story();
+    emitEvent();
 });
-canvas.on("object:modified", function () {
-    // console.log(undo_history.length);
-    if ((canvas.getActiveObject().type === 'activeSelection') || (canvas.getActiveObject().type === 'group')) {
+canvas.on("object:modified", function (e) {
+    if ((e.target.type === 'activeSelection') || (e.target.type === 'group')) {
         emitGroup();
     } else {
         emitModified();
     }
     story();
-    // console.log(e.target.name + ' is modified');
+});
+canvas.on("erasing:end", function () {
+    // e.path.globalCompositeOperation = 'destination-out';
+    story();
+    emitEvent();
+    console.log("erasing:end");
 });
 
-canvas.on("mouse:up", function() {
-    if (canvas.isDrawingMode === true) {
-        emitEvent();
-    }
-});
+// canvas.on("mouse:up", function() {
+//     if (canvas.isDrawingMode === true) {
+//         emitEvent();
+//     }
+// });
 
 canvas.on("selection:created", function() {
     if (!canvas.getActiveObject()) {
@@ -165,11 +169,9 @@ function undo() {
     if (undo_history.length > 0) {
         lockHistory = true;
         if (undo_history.length > 1) redo_history.push(undo_history.pop());
-        var content = undo_history[undo_history.length - 1];
-        canvas.loadFromJSON(content, function () {
-            canvas.renderAll();
-            lockHistory = false;
-        });
+        canvas.remove(canvas.item(canvas.size() - 1));
+        canvas.renderAll();
+        lockHistory = false;
     }
 }
 function redo() {
@@ -177,16 +179,17 @@ function redo() {
         lockHistory = true;
         var content = redo_history.pop();
         undo_history.push(content);
-        canvas.loadFromJSON(content, function () {
-            canvas.renderAll();
-            lockHistory = false;
+        var content = JSON.parse(undo_history[undo_history.length - 1]);
+        fabric.util.enlivenObjects([content], function (enlivenedObjects) {
+            canvas.add(enlivenedObjects[0]);
         });
+        canvas.renderAll();
+        lockHistory = false;
     }
 }
 function clearCanvas() {
     story();
     canvas.clear().renderAll();
-    newleft = 0;
 }
 
 // duplicate delete buttons
