@@ -35,8 +35,7 @@ io.on('connection', socket => {
         // socket.to(roomId).emit('user-connected', userId)
      
         socket.on('drawing', function (canvasJson) {
-            canvasData = canvasJson
-            socket.to(roomId).emit('drawing', canvasData)
+            socket.to(roomId).emit('drawing', canvasJson)
         })
         
         socket.on('find mate', function (reuqester) {
@@ -56,13 +55,11 @@ io.on('connection', socket => {
         })
 
         socket.on('send canvas', (reqID, previousJson) => {
-            previousData = previousJson
-            io.to(reqID).emit('get canvas', previousData)
+            io.to(reqID).emit('get canvas', previousJson)
         })
 
-        socket.on('postman', function (getCommand) {
-            sendCommand = getCommand
-            socket.to(roomId).emit('postman', sendCommand)
+        socket.on('send command', function (cmd) {
+            socket.to(roomId).emit('get command', cmd)
         })
   
         socket.on('disconnect', () => {

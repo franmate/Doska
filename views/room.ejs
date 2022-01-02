@@ -9,6 +9,8 @@
     <script src="jquery-3.6.0.min.js" defer></script>
     <script src="fabric.min.js" defer></script>
     <script src="main.js" defer></script>
+    <script src="hammer.min.js" defer></script>
+    <script src="touch.js" defer></script>
     <script src="pan.js" defer></script>
     <script>
         const ROOM_ID = "<%= roomId %>"
@@ -41,14 +43,14 @@
         <div class="dockPanel">
             <div class="main-tools">
                 <div class="tools canvasHistory">
-                    <button type="button" class="undo" onclick="undo(), goPostman('undo')"></button>
-                    <button type="button" class="redo" onclick="redo(), goPostman('redo')"></button>
+                    <button type="button" class="undo" onclick="undo(), sendCommand('undo')"></button>
+                    <button type="button" class="redo" onclick="redo(), sendCommand('redo')"></button>
                 </div>
                 <div class="tools brushSection">
                     <button type="button" class="select" id="select" onclick="changeAction(this)"></button>
                     <button type="button" class="pen" id="brush" onclick="changeAction(this)"></button>
                     <button type="button" class="eraser" id="erase" onclick="changeAction(this)"></button>
-                    <button type="button" class="clear" onclick="clearCanvas(), goPostman('clear')"></button>
+                    <button type="button" class="clear" onclick="clearCanvas(), sendCommand('clear')"></button>
                 </div>
                 <!-- <div class="tools canvasControlls">
                     <input name="file" type="file" id="uploader" accept="image/png, image/gif, image/jpeg"/>
