@@ -8,6 +8,9 @@ socket.on('name room', nameAndRoom => {
     socket.emit('find mate', nameAndRoom);
 });
 
+const canvas = this.__canvas = new fabric.Canvas('c');
+
+fabric.Object.prototype.objectCaching = false;
 fabric.Object.prototype.centeredScaling = true;
 fabric.Object.prototype.cornerStyle = 'circle';
 fabric.Object.prototype.transparentCorners = false;
@@ -53,30 +56,6 @@ function changeAction(target) {
             break;
     }
 }
-  
-const downloadImage = () => {
-    const ext = "png";
-    const base64 = canvas.toDataURL({
-        format: ext,
-        enableRetinaScaling: true
-    });
-    const link = document.createElement("a");
-    link.href = base64;
-    link.download = `list.${ext}`;
-    link.click();
-};
-const downloadSVG = () => {
-    const svg = canvas.toSVG();
-    const a = document.createElement("a");
-    const blob = new Blob([svg], { type: "image/svg+xml" });
-    const blobURL = URL.createObjectURL(blob);
-    a.href = blobURL;
-    a.download = "list.svg";
-    a.click();
-    URL.revokeObjectURL(blobURL);
-};
-  
-const canvas = this.__canvas = new fabric.Canvas('c');
 
 // Init variables
 let div = $("#canvasWrapper");
@@ -101,10 +80,11 @@ var redo_history = [];
 undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
 
 function story() {
-    let newObj = canvas.item(canvas.size() - 1);
-    if (lockHistory) return;
-    undo_history.push(JSON.stringify(newObj.toJSON(['name'])));
-    redo_history.length = 0;
+    // let newObj = canvas.item(canvas.size() - 1);
+    // if (lockHistory) return;
+    // undo_history.push(JSON.stringify(newObj.toJSON(['name'])));
+    // redo_history.length = 0;
+    console.log("keqing");
 }
 
 canvas.on("object:added", function (e) {
@@ -112,9 +92,9 @@ canvas.on("object:added", function (e) {
         let objectName = (Math.random()).toString().substring(2, 17);
         e.target.set('name', objectName);
     }
+    story();
 });
 canvas.on("path:created", function () {
-    story();
     emitObject();
 });
 canvas.on("object:modified", function (e) {

@@ -28,17 +28,12 @@ touch.on('pinch', function(ev) {
     // ev.distance
     i++;
 });
-touch.on('pinchstart', function() {
-    canvas.renderAll();
-});
+// touch.on('pinchstart', function() {
+//     canvas.renderAll();
+// });
 touch.on('pinchend', function() {
     // canvas.renderAll();
     setTimeout(() => {
         canvas.isDrawingMode = true;
     }, 100);
-});
-
-canvas.on("path:created", function () {
-    story();
-    emitObject();
 });
