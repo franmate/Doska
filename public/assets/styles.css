@@ -256,3 +256,13 @@ input[type="color"]::-webkit-color-swatch {
 .controls {
     display: inline-block;
 }
+
+@media (max-width: 610px) {
+    .container {
+        display: block;
+    }
+    .dockPanel {
+        left: 0;
+        right: 0;
+    }
+}
