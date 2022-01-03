@@ -57,6 +57,8 @@ function changeAction(target) {
     }
 }
 
+changeAction('brush');
+
 // Init variables
 let div = $("#canvasWrapper");
 let $canvas = $("#c");
@@ -71,8 +73,6 @@ $canvas.width(w).height(h);
 canvas.setHeight(h);
 canvas.setWidth(w);
 
-changeAction('brush');
-
 // Undo / Redo history
 var lockHistory = false;
 var undo_history = [];
@@ -80,11 +80,10 @@ var redo_history = [];
 undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
 
 function story() {
-    // let newObj = canvas.item(canvas.size() - 1);
-    // if (lockHistory) return;
-    // undo_history.push(JSON.stringify(newObj.toJSON(['name'])));
-    // redo_history.length = 0;
-    console.log("keqing");
+    if (lockHistory) return;
+    let newObj = canvas.item(canvas.size() - 1);
+    undo_history.push(JSON.stringify(newObj.toJSON(['name'])));
+    redo_history.length = 0;
 }
 function undo() {
     if (undo_history.length > 0) {
