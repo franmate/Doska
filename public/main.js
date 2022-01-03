@@ -320,12 +320,13 @@ $(".brushColors button").on('click', function () {
     activeColor = val;
     $("#brushColors").val(val);
     setBrush({color: val});
+    $('.colors').css('background-color', val);
 });
 $(".color-input").on('change', function () {
     let val = $(this).val();
     activeColor = val;
     setBrush({color: val});
-    $('.colors').css('background-color',val);
+    $('.colors').css('background-color', val);
 });
 
 // Socket emit
@@ -471,21 +472,6 @@ $('.color-input').hover(function(){
     menuToggle = false;
 }, function(){
     menuToggle = true;
-});
-$('.black').click(function(){
-    $('.colors').css('background-color','#b8b8b8');
-});
-$('.red').click(function(){
-    $('.colors').css('background-color','#ff4b4b');
-});
-$('.yellow').click(function(){
-    $('.colors').css('background-color','#ffab2c');
-});
-$('.green').click(function(){
-    $('.colors').css('background-color','#1dcf46');
-});
-$('.blue').click(function(){
-    $('.colors').css('background-color','#25a1ff');
 });
 
 // Brush size settings
