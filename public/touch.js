@@ -29,10 +29,10 @@ touch.on('pinch', function(ev) {
     i++;
 });
 // touch.on('pinchstart', function() {
-//     canvas.renderAll();
+//     canvas.requestRenderAll();
 // });
 touch.on('pinchend', function() {
-    // canvas.renderAll();
+    // canvas.requestRenderAll();
     setTimeout(() => {
         canvas.isDrawingMode = true;
     }, 100);

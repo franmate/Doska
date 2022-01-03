@@ -139,12 +139,18 @@ canvas.on("before:selection:cleared", function() {
     canvas.requestRenderAll();
 });
 
+let rendrd = 0;
+canvas.on("after:render", function() {
+    console.log("rendered " + rendrd + " times");
+    rendrd++;
+});
+
 function undo() {
     if (undo_history.length > 0) {
         lockHistory = true;
         if (undo_history.length > 1) redo_history.push(undo_history.pop());
         canvas.remove(canvas.item(canvas.size() - 1));
-        canvas.renderAll();
+        canvas.requestRenderAll();
         lockHistory = false;
     }
 }
@@ -157,7 +163,7 @@ function redo() {
         fabric.util.enlivenObjects([content], function (enlivenedObjects) {
             canvas.add(enlivenedObjects[0]);
         });
-        canvas.renderAll();
+        canvas.requestRenderAll();
         lockHistory = false;
     }
 }
@@ -242,7 +248,7 @@ function cloneObject() {
                 canvas.add(clonedImg);
                 canvas.setActiveObject(clonedImg);
             });
-            canvas.renderAll();
+            canvas.requestRenderAll();
             emitObject();
         });
     } else {
@@ -303,20 +309,20 @@ function setBrush(options) {
 }
 
 // Set brush size
-$(".size-btns button").on('click', function () {
-    $(".size-btns button").removeClass('active');
+$(".brushSizes button").on('click', function () {
+    $(".brushSizes button").removeClass('active');
     $(this).addClass('active');
 });
 
 // Set brush color
-$(".color-btns button").on('click', function () {
+$(".brushColors button").on('click', function () {
     let val = $(this).data('value');
     activeColor = val;
-    $("#brushColor").val(val);
+    $("#brushColors").val(val);
     setBrush({color: val});
 });
 
-$("#brushColor").on('change', function () {
+$(".color-input").on('change', function () {
     let val = $(this).val();
     activeColor = val;
     setBrush({color: val});
@@ -372,12 +378,12 @@ socket.on('drawing', function (obj) {
     let jsonObj = JSON.parse(obj.json);
     if (obj.modified === "true") {
         canvas.remove(canvas.getItemByName(jsonObj.name));
-        canvas.renderAll();
+        canvas.requestRenderAll();
     }
     if (obj.grouped === "false") {
         fabric.util.enlivenObjects([jsonObj], function (enlivenedObjects) {
             canvas.add(enlivenedObjects[0]);
-            canvas.renderAll();
+            canvas.requestRenderAll();
         });
     } else if (obj.grouped === "true") {
         fabric.util.enlivenObjects([jsonObj], function (enlivenedObjects) {
@@ -416,33 +422,13 @@ socket.on('get command', function (cmd) {
     } else if (command == "clear") {
         clearCanvas();
     } else if (command == "none") {
-        canvas.setBackgroundColor({source: '/assets/patterns/pattern_none.svg', repeat: 'repeat'}, function () {
-            canvas.renderAll();
-        });
-        $('.paper').css('background-image','url(../assets/icons/rect.svg)');
-        $(".bcgr-btns button").removeClass('active');
-        $(this).addClass('active');
+        setPattern(command);
     } else if (command == "sq") {
-        canvas.setBackgroundColor({source: '/assets/patterns/pattern_sq.svg', repeat: 'repeat'}, function () {
-            canvas.renderAll();
-        });
-        $('.paper').css('background-image','url(../assets/icons/sq.svg)');
-        $(".bcgr-btns button").removeClass('active');
-        $(this).addClass('active');
+        setPattern(command);
     } else if (command == "line") {
-        canvas.setBackgroundColor({source: '/assets/patterns/pattern_line.svg', repeat: 'repeat'}, function () {
-            canvas.renderAll();
-        });
-        $('.paper').css('background-image','url(../assets/icons/line.svg)');
-        $(".bcgr-btns button").removeClass('active');
-        $(this).addClass('active');
+        setPattern(command);
     } else if (command == "dot") {
-        canvas.setBackgroundColor({source: '/assets/patterns/pattern_dot.svg', repeat: 'repeat'}, function () {
-            canvas.renderAll();
-        });
-        $('.paper').css('background-image','url(../assets/icons/dot.svg)');
-        $(".bcgr-btns button").removeClass('active');
-        $(this).addClass('active');
+        setPattern(command);
     } else if (command == "deleteDone") {
         story();
     } else {
@@ -455,18 +441,19 @@ let menuToggle = false;
 
 // $('.shapes').click(function(){
 //     if (menuToggle === false) {
-//         $(".addShape").fadeIn(100);
+//         $(".addShapes").fadeIn(100);
 //         setTimeout(() => {
 //             menuToggle = true;
 //         }, 200);
 //     } else {
-//         $(".addShape").fadeOut(100);
+//         $(".addShapes").fadeOut(100);
 //         setTimeout(() => {
 //             menuToggle = false;
 //         }, 200);
 //     }
 // });
 
+// Brush color settings
 $('.colors').click(function(){
     if (menuToggle === false) {
         $(".brushColors").fadeIn(100);
@@ -501,85 +488,59 @@ $('.blue').click(function(){
     $('.colors').css('background-color','#25a1ff');
 });
 
-$('.size').click(function(){
+// Brush size settings
+$('.sizes').click(function(){
     if (menuToggle === false) {
-        $(".brushSize").fadeIn(100);
+        $(".brushSizes").fadeIn(100);
         setTimeout(() => {
             menuToggle = true;
         }, 200);
     } else {
-        $(".brushSize").fadeOut(100);
+        $(".brushSizes").fadeOut(100);
         setTimeout(() => {
             menuToggle = false;
         }, 200);
     }
 });
 $('.small').click(function(){
-    $('.size').css('background-size','50%');
+    $('.sizes').css('background-size','50%');
 });
 $('.middle').click(function(){
-    $('.size').css('background-size','70%');
+    $('.sizes').css('background-size','70%');
 });
 $('.big').click(function(){
-    $('.size').css('background-size','110%');
+    $('.sizes').css('background-size','110%');
 });
 
-$('.paper').click(function(){
+// Canvas pattern settings
+$('.patterns').click(function(){
     if (menuToggle === false) {
-        $(".canvasBackground").fadeIn(100);
+        $(".canvasPatterns").fadeIn(100);
         setTimeout(() => {
             menuToggle = true;
         }, 200);
     } else {
-        $(".canvasBackground").fadeOut(100);
+        $(".canvasPatterns").fadeOut(100);
         setTimeout(() => {
             menuToggle = false;
         }, 200);
     }
 });
-$('.none').click(function(){
-    canvas.setBackgroundColor({source: '/assets/patterns/pattern_none.svg', repeat: 'repeat'}, function () {
-        canvas.renderAll();
+function setPattern(name) {
+    canvas.setBackgroundColor({source: `/assets/patterns/pattern_${name}.svg`, repeat: 'repeat'}, function () {
+        canvas.requestRenderAll();
     });
-    $('.paper').css('background-image','url(../assets/icons/rect.svg)');
-    $(".bcgr-btns button").removeClass('active');
-    $(this).addClass('active');
-    sendCommand("none");
-});
-$('.sq').click(function(){
-    canvas.setBackgroundColor({source: '/assets/patterns/pattern_sq.svg', repeat: 'repeat'}, function () {
-        canvas.renderAll();
-    });
-    $('.paper').css('background-image','url(../assets/icons/sq.svg)');
-    $(".bcgr-btns button").removeClass('active');
-    $(this).addClass('active');
-    sendCommand("sq");
-});
-$('.line').click(function(){
-    canvas.setBackgroundColor({source: '/assets/patterns/pattern_line.svg', repeat: 'repeat'}, function () {
-        canvas.renderAll();
-    });
-    $('.paper').css('background-image','url(../assets/icons/line.svg)');
-    $(".bcgr-btns button").removeClass('active');
-    $(this).addClass('active');
-    sendCommand("line");
-});
-$('.dot').click(function(){
-    canvas.setBackgroundColor({source: '/assets/patterns/pattern_dot.svg', repeat: 'repeat'}, function () {
-        canvas.renderAll();
-    });
-    $('.paper').css('background-image','url(../assets/icons/dot.svg)');
-    $(".bcgr-btns button").removeClass('active');
-    $(this).addClass('active');
-    sendCommand("dot");
-});
+    $('.patterns').css('background-image',`url(../assets/icons/${name}.svg)`);
+    $(".canvasPatterns button").removeClass('active');
+    $(`.${name}`).addClass('active');
+};
 
 $('body').click(function(){
     if (menuToggle === true) {
         // $(".addShape").fadeOut(100);
         $(".brushColors").fadeOut(100);
-        $(".brushSize").fadeOut(100);
-        $(".canvasBackground").fadeOut(100);
+        $(".brushSizes").fadeOut(100);
+        $(".canvasPatterns").fadeOut(100);
         setTimeout(() => {
             menuToggle = false;
         }, 200);

@@ -73,12 +73,12 @@ body {
     position: absolute;
     bottom: 111px;
 }
-.brushSize {
+.brushSizes {
     display: none;
     position: absolute;
     bottom: 111px;
 }
-.canvasBackground {
+.canvasPatterns {
     display: none;
     position: absolute;
     bottom: 111px;
@@ -116,6 +116,7 @@ button:active {
 .redo {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-arrow-forward-up' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M15 13l4 -4l-4 -4m4 4h-11a4 4 0 0 0 0 8h1' /%3E%3C/svg%3E");
 }
+
 .select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-click' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Cline x1='3' y1='12' x2='6' y2='12' /%3E%3Cline x1='12' y1='3' x2='12' y2='6' /%3E%3Cline x1='7.8' y1='7.8' x2='5.6' y2='5.6' /%3E%3Cline x1='16.2' y1='7.8' x2='18.4' y2='5.6' /%3E%3Cline x1='7.8' y1='16.2' x2='5.6' y2='18.4' /%3E%3Cpath d='M12 12l9 3l-4 2l-2 4l-3 -9' /%3E%3C/svg%3E");
 }
@@ -131,15 +132,16 @@ button:active {
 .clear:active {
     background-color: #ff655b;
 }
+
 .colors {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-palette' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M12 21a9 9 0 1 1 0 -18a9 8 0 0 1 9 8a4.5 4 0 0 1 -4.5 4h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25' /%3E%3Ccircle cx='7.5' cy='10.5' r='.5' fill='currentColor' /%3E%3Ccircle cx='12' cy='7.5' r='.5' fill='currentColor' /%3E%3Ccircle cx='16.5' cy='10.5' r='.5' fill='currentColor' /%3E%3C/svg%3E");
     background-color: #b8b8b8;
 }
-.size {
+.sizes {
     background-image: url(../assets/icons/point.svg);
     background-size: 70%;
 }
-.paper {
+.patterns {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-square' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Crect x='4' y='4' width='16' height='16' rx='2' /%3E%3C/svg%3E");
 }
 
@@ -156,7 +158,7 @@ button:active {
     background-size: 110%;
 }
 
-.color-bt {
+.color {
     border-radius: 100%;
 }
 .black {
@@ -191,7 +193,7 @@ button:active {
 }
 
 .none {
-    background-image: url(../assets/icons/rect.svg);
+    background-image: url(../assets/icons/none.svg);
 }
 .sq {
     background-image: url(../assets/icons/sq.svg);
@@ -220,7 +222,6 @@ input[type="color"]::-webkit-color-swatch-wrapper {
     padding: 0;
     transition: 0.3s;
 }
-
 input[type="color"]::-webkit-color-swatch {
     border: none;
     border-radius: 13px;
@@ -251,10 +252,6 @@ input[type="color"]::-webkit-color-swatch {
 .uploader-button:active {
     box-shadow: none;
     transition: 0.2s;
-}
-
-.controls {
-    display: inline-block;
 }
 
 @media (max-width: 610px) {
