@@ -86,65 +86,6 @@ function story() {
     // redo_history.length = 0;
     console.log("keqing");
 }
-
-canvas.on("object:added", function (e) {
-    if (e.target.name === undefined) {
-        let objectName = (Math.random()).toString().substring(2, 17);
-        e.target.set('name', objectName);
-    }
-    story();
-});
-canvas.on("path:created", function () {
-    emitObject();
-});
-canvas.on("object:modified", function (e) {
-    if ((e.target.type === 'activeSelection') || (e.target.type === 'group')) {
-        emitGroup();
-    } else {
-        emitModified();
-    }
-    story();
-});
-canvas.on("erasing:end", function () {
-    // e.path.globalCompositeOperation = 'destination-out';
-    story();
-    emitObject();
-    console.log("erasing:end");
-});
-
-canvas.on("selection:created", function() {
-    if (!canvas.getActiveObject()) {
-        return;
-    }
-    if (canvas.getActiveObject().type !== 'activeSelection') {
-        return;
-    }
-    canvas.getActiveObject().toGroup();
-    canvas.requestRenderAll();
-});
-// canvas.on("selection:updated", function() {
-//     console.log("selecion updated");
-// });
-// canvas.on("selection:cleared", function() {
-//     console.log("selecion cleared");
-// });
-canvas.on("before:selection:cleared", function() {
-    if (!canvas.getActiveObject()) {
-        return;
-    }
-    if (canvas.getActiveObject().type !== 'group') {
-        return;
-    }
-    canvas.getActiveObject().toActiveSelection();
-    canvas.requestRenderAll();
-});
-
-let rendrd = 0;
-canvas.on("after:render", function() {
-    console.log("rendered " + rendrd + " times");
-    rendrd++;
-});
-
 function undo() {
     if (undo_history.length > 0) {
         lockHistory = true;
@@ -167,6 +108,53 @@ function redo() {
         lockHistory = false;
     }
 }
+
+canvas.on("object:added", function (e) {
+    if (e.target.name === undefined) {
+        let objectName = (Math.random()).toString().substring(2, 17);
+        e.target.set('name', objectName);
+    }
+    story();
+});
+canvas.on("path:created", function () {
+    emitObject();
+});
+canvas.on("object:modified", function (e) {
+    if (e.target.type === 'activeSelection') {
+        canvas.getActiveObject().toGroup();
+        emitGroup();
+        canvas.getActiveObject().toActiveSelection();
+    } else {
+        emitModified();
+    }
+    story();
+});
+canvas.on("erasing:end", function () {
+    // e.path.globalCompositeOperation = 'destination-out';
+    story();
+    emitObject();
+    console.log("erasing:end");
+});
+
+// canvas.on("selection:created", function() {
+//     console.log("selecion created");
+// });
+// canvas.on("selection:updated", function() {
+//     console.log("selecion updated");
+// });
+// canvas.on("selection:cleared", function() {
+//     console.log("selecion cleared");
+// });
+// canvas.on("before:selection:cleared", function() {
+//     console.log("before selecion cleared");
+// });
+
+// let rendrd = 0;
+// canvas.on("after:render", function() {
+//     console.log("rendered " + rendrd + " times");
+//     rendrd++;
+// });
+
 function clearCanvas() {
     story();
     let objects = canvas.getObjects();
