@@ -391,13 +391,17 @@ socket.on('get canvas', function (obj) {
     canvas.loadFromJSON(obj.data);
     undo_history = obj.undo;
     redo_history = obj.redo;
+    $('.patterns').css('background-image',`url(../assets/icons/${obj.pattern}.svg)`);
+    $(".canvasPatterns button").removeClass('active');
+    $(`.${obj.pattern}`).addClass('active');
 });
 
 socket.on('get requester', requesterID => {
     let data = {
         data: JSON.stringify(canvas.toJSON(['name'])),
         undo: undo_history,
-        redo: redo_history
+        redo: redo_history,
+        pattern: currentPattern
     };
     socket.emit('send canvas', requesterID, data);
 })
@@ -500,6 +504,7 @@ $('.patterns').click(function(){
         }, 200);
     }
 });
+let currentPattern = '';
 function setPattern(name) {
     canvas.setBackgroundColor({source: `/assets/patterns/pattern_${name}.svg`, repeat: 'repeat'}, function () {
         canvas.requestRenderAll();
@@ -507,6 +512,7 @@ function setPattern(name) {
     $('.patterns').css('background-image',`url(../assets/icons/${name}.svg)`);
     $(".canvasPatterns button").removeClass('active');
     $(`.${name}`).addClass('active');
+    currentPattern = name;
 };
 
 $('body').click(function(){
