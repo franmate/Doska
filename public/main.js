@@ -321,11 +321,11 @@ $(".brushColors button").on('click', function () {
     $("#brushColors").val(val);
     setBrush({color: val});
 });
-
 $(".color-input").on('change', function () {
     let val = $(this).val();
     activeColor = val;
     setBrush({color: val});
+    $('.colors').css('background-color',val);
 });
 
 // Socket emit
