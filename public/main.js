@@ -503,7 +503,7 @@ $('.patterns').click(function(){
         }, 200);
     }
 });
-let currentPattern = '';
+let currentPattern = 'none';
 function setPattern(name) {
     canvas.setBackgroundColor({source: `/assets/patterns/pattern_${name}.svg`, repeat: 'repeat'}, function () {
         canvas.requestRenderAll();
