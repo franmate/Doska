@@ -393,6 +393,7 @@ socket.on('get canvas', function (obj) {
     $('.patterns').css('background-image',`url(../assets/icons/${obj.pattern}.svg)`);
     $(".canvasPatterns button").removeClass('active');
     $(`.${obj.pattern}`).addClass('active');
+    currentPattern = obj.pattern;
 });
 
 socket.on('get requester', requesterID => {
