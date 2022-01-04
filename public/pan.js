@@ -150,9 +150,9 @@ class JoystickController
 
 let joystick = new JoystickController("stick", 64, 8);
 
-var intervalId;
+let intervalId;
 
-var panStick = document.getElementById('stick');
+let panStick = document.getElementById('stick');
 
 panStick.addEventListener('pointerdown', (event) => {
     // canvas.isDrawingMode = false;

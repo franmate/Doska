@@ -1,13 +1,3 @@
-const socket = io('/');
-let userInfo;
-socket.emit('join-room', ROOM_ID, 10);
-// socket.on('user-connected', userId => {
-//     console.log('User connected: ' + userId);
-// })
-socket.on('name room', nameAndRoom => {
-    socket.emit('find mate', nameAndRoom);
-});
-
 const canvas = this.__canvas = new fabric.Canvas('c');
 
 fabric.Object.prototype.objectCaching = false;
@@ -27,9 +17,42 @@ fabric.Canvas.prototype.getItemByName = function(name) {
     return object;
 };
 
+// Init variables
+let div = $("#canvasWrapper");
+let $canvas = $("#c");
+
+// Width & height of canvas's wrapper
+let w, h;
+w = div.width();
+h = div.height();
+$canvas.width(w).height(h);
+
+// Set width & height for canvas
+canvas.setHeight(h);
+canvas.setWidth(w);
+
+$(window)
+    // Canvas resize
+    .on('resize', function () {
+        w = div.width();
+        h = div.height();
+        canvas.setHeight(h);
+        canvas.setWidth(w);
+        $canvas.width(w).height(h);
+    })
+
+    // Delete key
+    .on('keydown', function (e) {
+        if (e.keyCode === 46) {
+            deleteObject();
+        }
+    });
+
+// Default brush settings
 let widthOption = 5;
 let colorOption = 'black';
 
+// Change tool
 function changeAction(target) {
     ['select','erase','brush'].forEach(action => {
         const t = document.getElementById(action);
@@ -57,26 +80,14 @@ function changeAction(target) {
     }
 }
 
+// Default tool
 changeAction('brush');
 
-// Init variables
-let div = $("#canvasWrapper");
-let $canvas = $("#c");
-
-// Width & height of canvas's wrapper
-let w, h;
-w = div.width();
-h = div.height();
-$canvas.width(w).height(h);
-
-// Set width & height for canvas
-canvas.setHeight(h);
-canvas.setWidth(w);
-
-// Undo / Redo history
-var lockHistory = false;
-var undo_history = [];
-var redo_history = [];
+// Undo / Redo function
+let lockHistory = false;
+let undo_history = [];
+let redo_history = [];
+let storyLine = [];
 undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
 
 function story() {
@@ -108,23 +119,27 @@ function redo() {
     }
 }
 
+// Canvas events
 canvas.on("object:added", function (e) {
     if (e.target.name === undefined) {
         let objectName = (Math.random()).toString().substring(2, 17);
         e.target.set('name', objectName);
     }
-    story();
 });
 canvas.on("path:created", function () {
+    story();
     emitObject();
+    storyLine.push('path created');
 });
 canvas.on("object:modified", function (e) {
     if (e.target.type === 'activeSelection') {
         canvas.getActiveObject().toGroup();
-        emitGroup();
+        emitModified('group');
         canvas.getActiveObject().toActiveSelection();
+        storyLine.push('group modified');
     } else {
-        emitModified();
+        emitModified('object');
+        storyLine.push('object modified');
     }
     story();
 });
@@ -154,17 +169,7 @@ canvas.on("erasing:end", function () {
 //     rendrd++;
 // });
 
-function clearCanvas() {
-    story();
-    let objects = canvas.getObjects();
-    objects.forEach(function (object) {
-        sendCommand(object.name)
-        canvas.remove(object);
-    });
-    sendCommand("deleteDone");
-}
-
-// Duplicate / Delete buttons
+// Duplicate / Delete object buttons
 var deleteIcon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-circle-x' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Ccircle cx='12' cy='12' r='9' /%3E%3Cpath d='M10 10l4 4m0 -4l-4 4' /%3E%3C/svg%3E";
 // var cloneIcon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-copy' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Crect x='8' y='8' width='12' height='12' rx='2' /%3E%3Cpath d='M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2' /%3E%3C/svg%3E"
 
@@ -207,6 +212,7 @@ fabric.Object.prototype.controls.deleteControl = new fabric.Control({
 //     cornerSize: 24
 // });
 
+// Delete object
 function deleteObject(eventData, transform) {
     if (canvas.getActiveObject().type === 'group') {
         canvas.getActiveObject().toActiveSelection();
@@ -224,6 +230,7 @@ function deleteObject(eventData, transform) {
     }
 }
 
+// Clone object
 function cloneObject() {
     canvas.getActiveObject().toActiveSelection();
     if(canvas.getActiveObject().get('type')==="image") {
@@ -269,20 +276,19 @@ function cloneObject() {
     }
 }
 
-$(window)
-    .on('resize', function () {
-        w = div.width();
-        h = div.height();
-        canvas.setHeight(h);
-        canvas.setWidth(w);
-        $canvas.width(w).height(h);
-    })
-    .on('keydown', function (e) {
-        if (e.keyCode === 46) { // Delete key
-            deleteObject();
-        }
+// Clear canvas
+function clearCanvas() {
+    story();
+    let objects = canvas.getObjects();
+    objects.forEach(function (object) {
+        sendCommand(object.name)
+        canvas.remove(object);
     });
+    sendCommand("deleteDone");
+}
 
+// Settings
+// Brush settings
 function setBrush(options) {
     if (options.width !== undefined) {
         canvas.freeDrawingBrush.width = parseInt(options.width, 10);
@@ -316,137 +322,23 @@ $(".color-input").on('change', function () {
     $('.colors').css('background-color', val);
 });
 
-// Socket emit
-let lastObj = canvas.item(canvas.size() - 1);
-function emitObject() {
-    let newObj = canvas.item(canvas.size() - 1);
-    if (newObj != lastObj) {
-        let json = JSON.stringify(newObj.toJSON(['name']));
-        let data = {
-            json: json,
-            grouped: "false",
-            modified: "false"
-        };
-        socket.emit('drawing', data);
-        lastObj = newObj;
-    }
-}
-
-function emitModified() {
-    let newObj = canvas.getActiveObject();
-    let json = JSON.stringify(newObj.toJSON(['name']));
-    let data = {
-        json: json,
-        grouped: "false",
-        modified: "true"
-    };
-    socket.emit('drawing', data);
-    lastObj = newObj;
-}
-
-function emitGroup() {
-    let newObj = canvas.getActiveObject();
-    let json = JSON.stringify(newObj.toJSON(['name']));
-    let data = {
-        json: json,
-        grouped: "true",
-        modified: "false"
-    };
-    socket.emit('drawing', data);
-    lastObj = newObj;
-}
-
-function sendCommand(command) {
-    let jsonCommand = JSON.stringify(command);
-    socket.emit('send command', jsonCommand);
-}
-
-// Socket on
-socket.on('drawing', function (obj) {
-    let jsonObj = JSON.parse(obj.json);
-    if (obj.modified === "true") {
-        canvas.remove(canvas.getItemByName(jsonObj.name));
+// Canvas settings
+// Set canvas pattern
+let currentPattern = 'none';
+function setPattern(name) {
+    canvas.setBackgroundColor({source: `/assets/patterns/pattern_${name}.svg`, repeat: 'repeat'}, function () {
         canvas.requestRenderAll();
-    }
-    if (obj.grouped === "false") {
-        fabric.util.enlivenObjects([jsonObj], function (enlivenedObjects) {
-            canvas.add(enlivenedObjects[0]);
-            canvas.requestRenderAll();
-        });
-    } else if (obj.grouped === "true") {
-        fabric.util.enlivenObjects([jsonObj], function (enlivenedObjects) {
-            canvas.add(enlivenedObjects[0]);
-            canvas.setActiveObject(enlivenedObjects[0]);
-            canvas.getActiveObject().toActiveSelection();
-            canvas.getActiveObjects().forEach(element => canvas.remove(canvas.getItemByName(element.name)));
-            canvas.discardActiveObject();
-            canvas.requestRenderAll();
-        });
-    }
-    story();
-});
-
-socket.on('get canvas', function (obj) {
-    canvas.loadFromJSON(obj.data);
-    undo_history = obj.undo;
-    redo_history = obj.redo;
-    $('.patterns').css('background-image',`url(../assets/icons/${obj.pattern}.svg)`);
+    });
+    $('.patterns').css('background-image',`url(../assets/icons/${name}.svg)`);
     $(".canvasPatterns button").removeClass('active');
-    $(`.${obj.pattern}`).addClass('active');
-    currentPattern = obj.pattern;
-});
+    $(`.${name}`).addClass('active');
+    currentPattern = name;
+};
 
-socket.on('get requester', requesterID => {
-    let data = {
-        data: JSON.stringify(canvas.toJSON(['name'])),
-        undo: undo_history,
-        redo: redo_history,
-        pattern: currentPattern
-    };
-    socket.emit('send canvas', requesterID, data);
-})
-
-socket.on('get command', function (cmd) {
-    let command = JSON.parse(cmd);
-    if (command == "undo") {
-        undo();
-    } else if (command == "redo") {
-        redo();
-    } else if (command == "clear") {
-        clearCanvas();
-    } else if (command == "none") {
-        setPattern(command);
-    } else if (command == "sq") {
-        setPattern(command);
-    } else if (command == "line") {
-        setPattern(command);
-    } else if (command == "dot") {
-        setPattern(command);
-    } else if (command == "deleteDone") {
-        story();
-    } else {
-        canvas.remove(canvas.getItemByName(command));
-    }
-});
-
-// Dock panel
+// Panel
 let menuToggle = false;
 
-// $('.shapes').click(function(){
-//     if (menuToggle === false) {
-//         $(".addShapes").fadeIn(100);
-//         setTimeout(() => {
-//             menuToggle = true;
-//         }, 200);
-//     } else {
-//         $(".addShapes").fadeOut(100);
-//         setTimeout(() => {
-//             menuToggle = false;
-//         }, 200);
-//     }
-// });
-
-// Brush color settings
+// Brush color panel
 $('.colors').click(function(){
     if (menuToggle === false) {
         $(".brushColors").fadeIn(100);
@@ -466,7 +358,7 @@ $('.color-input').hover(function(){
     menuToggle = true;
 });
 
-// Brush size settings
+// Brush size panel
 $('.sizes').click(function(){
     if (menuToggle === false) {
         $(".brushSizes").fadeIn(100);
@@ -490,7 +382,7 @@ $('.big').click(function(){
     $('.sizes').css('background-size','110%');
 });
 
-// Canvas pattern settings
+// Canvas pattern panel
 $('.patterns').click(function(){
     if (menuToggle === false) {
         $(".canvasPatterns").fadeIn(100);
@@ -504,20 +396,9 @@ $('.patterns').click(function(){
         }, 200);
     }
 });
-let currentPattern = 'none';
-function setPattern(name) {
-    canvas.setBackgroundColor({source: `/assets/patterns/pattern_${name}.svg`, repeat: 'repeat'}, function () {
-        canvas.requestRenderAll();
-    });
-    $('.patterns').css('background-image',`url(../assets/icons/${name}.svg)`);
-    $(".canvasPatterns button").removeClass('active');
-    $(`.${name}`).addClass('active');
-    currentPattern = name;
-};
 
 $('body').click(function(){
     if (menuToggle === true) {
-        // $(".addShape").fadeOut(100);
         $(".brushColors").fadeOut(100);
         $(".brushSizes").fadeOut(100);
         $(".canvasPatterns").fadeOut(100);
