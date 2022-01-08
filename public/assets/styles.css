@@ -57,7 +57,7 @@ body {
     z-index: 3;
     background-color: #ffffffeb;
     border-radius: 50px;
-    box-shadow: 3px 2px 10px #d4d1d1, -2px -2px 10px #fcfcfc;
+    box-shadow: 1px 2px 3px #d4d1d1, 0px 0px 1px #d4d4d4;
     backdrop-filter: blur(3px);
 }
 .main-tools {
