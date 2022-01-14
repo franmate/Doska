@@ -81,7 +81,7 @@ socket.on('drawing', function (obj) {
             canvas.requestRenderAll();
         });
     }
-    story();
+    // addToStory('object');
 });
 
 // Get command
@@ -102,7 +102,7 @@ socket.on('get command', function (cmd) {
     } else if (command == "dot") {
         setPattern(command);
     } else if (command == "deleteDone") {
-        story();
+        // addToStory('object');
     } else {
         canvas.remove(canvas.getItemByName(command));
     }

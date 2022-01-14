@@ -9,10 +9,11 @@
     <script src="jquery-3.6.0.min.js" defer></script>
     <script src="fabric.min.js" defer></script>
     <script src="main.js" defer></script>
+    <script src="story.js" defer></script>
     <script src="socket.js" defer></script>
+    <script src="pan.js" defer></script>
     <script src="hammer.min.js" defer></script>
     <script src="touch.js" defer></script>
-    <script src="pan.js" defer></script>
     <script src="export.js" defer></script>
     <script>
         const ROOM_ID = "<%= roomId %>"
@@ -27,15 +28,13 @@
 <body>
     <div class="container">
 
+        <div class="topPanel">
+            <!-- <button type="button" class="link" onclick="copyLink()"></button> -->
+            <button type="button" class="download" onclick="downloadImage()"></button>
+        </div>        
+
         <div id="canvasWrapper">
             <canvas id="c" style="position: relative; top: 0; bottom: 0; left: 0; right: 0; z-index: 2;"></canvas>
-        </div>
-
-        <div style="width: 128px; position: fixed; top: 0px; left: 0px; z-index: 10; transform: scale(0.5); cursor: pointer;">
-            <img src="assets/joystick/joystick-base.png"/>
-            <div id="stick" style="position: absolute; left:32px; top:32px;">
-            <img src="assets/joystick/joystick-blue.png"/>
-            </div>
         </div>
 
         <div class="dockPanel">
@@ -44,7 +43,7 @@
                     <button type="button" class="undo" onclick="undo(), sendCommand('undo')"></button>
                     <button type="button" class="redo" onclick="redo(), sendCommand('redo')"></button>
                 </div>
-                <div class="tools">
+                <div class="tools center">
                     <button type="button" class="select" id="select" onclick="changeAction(this)"></button>
                     <button type="button" class="pen" id="brush" onclick="changeAction(this)"></button>
                     <button type="button" class="eraser" id="erase" onclick="changeAction(this)"></button>
@@ -60,12 +59,12 @@
                     <button class="patterns"></button>
                 </div>
             </div>
-            <div class="tools brushSizes">
+            <div class="tools brushSizes settings">
                 <button class="small" onclick="setBrush({width: 3})"></button>
                 <button class="middle active" onclick="setBrush({width: 5})"></button>
                 <button class="big" onclick="setBrush({width: 10})"></button>
             </div>
-            <div class="tools brushColors">
+            <div class="tools brushColors settings">
                 <button class="color black active" data-value="#000000"></button>
                 <button class="color red" data-value="#D01919"></button>
                 <button class="color yellow" data-value="#EAAE00"></button>
@@ -73,7 +72,7 @@
                 <button class="color blue" data-value="#1678C2"></button>
                 <input type="color" class="button color-input">
             </div>
-            <div class="tools canvasPatterns">
+            <div class="tools canvasPatterns settings">
                 <button class="none active" onclick="setPattern('none'), sendCommand('none')"></button>
                 <button class="sq" onclick="setPattern('sq'), sendCommand('sq')"></button>
                 <button class="line" onclick="setPattern('line'), sendCommand('line')"></button>

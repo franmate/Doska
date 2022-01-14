@@ -20,13 +20,11 @@ fabric.Canvas.prototype.getItemByName = function(name) {
 // Init variables
 let div = $("#canvasWrapper");
 let $canvas = $("#c");
-
 // Width & height of canvas's wrapper
 let w, h;
 w = div.width();
 h = div.height();
 $canvas.width(w).height(h);
-
 // Set width & height for canvas
 canvas.setHeight(h);
 canvas.setWidth(w);
@@ -51,7 +49,6 @@ $(window)
 // Default brush settings
 let widthOption = 5;
 let colorOption = 'black';
-
 // Change tool
 function changeAction(target) {
     ['select','erase','brush'].forEach(action => {
@@ -79,45 +76,8 @@ function changeAction(target) {
             break;
     }
 }
-
 // Default tool
 changeAction('brush');
-
-// Undo / Redo function
-let lockHistory = false;
-let undo_history = [];
-let redo_history = [];
-let storyLine = [];
-undo_history.push(JSON.stringify(canvas.toJSON(['name'])));
-
-function story() {
-    if (lockHistory) return;
-    let newObj = canvas.item(canvas.size() - 1);
-    undo_history.push(JSON.stringify(newObj.toJSON(['name'])));
-    redo_history.length = 0;
-}
-function undo() {
-    if (undo_history.length > 0) {
-        lockHistory = true;
-        if (undo_history.length > 1) redo_history.push(undo_history.pop());
-        canvas.remove(canvas.item(canvas.size() - 1));
-        canvas.requestRenderAll();
-        lockHistory = false;
-    }
-}
-function redo() {
-    if (redo_history.length > 0) {
-        lockHistory = true;
-        var content = redo_history.pop();
-        undo_history.push(content);
-        var content = JSON.parse(undo_history[undo_history.length - 1]);
-        fabric.util.enlivenObjects([content], function (enlivenedObjects) {
-            canvas.add(enlivenedObjects[0]);
-        });
-        canvas.requestRenderAll();
-        lockHistory = false;
-    }
-}
 
 // Canvas events
 canvas.on("object:added", function (e) {
@@ -126,41 +86,51 @@ canvas.on("object:added", function (e) {
         e.target.set('name', objectName);
     }
 });
-canvas.on("path:created", function () {
-    story();
+canvas.on("path:created", function (e) {
+    clearRedo();
+    story("added", JSON.stringify(e.path.toJSON(['name'])));
     emitObject();
-    storyLine.push('path created');
 });
 canvas.on("object:modified", function (e) {
+    clearRedo();
     if (e.target.type === 'activeSelection') {
-        canvas.getActiveObject().toGroup();
-        emitModified('group');
-        canvas.getActiveObject().toActiveSelection();
-        storyLine.push('group modified');
+        let i = 0;
+        let activeObjectNames = [];
+        let activeObjects = [];
+        e.target._objects.forEach(element => {
+            activeObjectNames.push(element.name);
+        });
+        canvas.discardActiveObject();
+        activeObjectNames.forEach(element => {
+            activeObjects.push(canvas.getItemByName(element));
+        });
+        activeObjects.forEach(element => {
+            story(i, JSON.stringify(element.toJSON(['name'])));
+            i++;
+        });
+        let selection = new fabric.ActiveSelection(activeObjects, {
+            canvas: canvas
+        });
+        canvas.setActiveObject(selection);
+        // emitModified('group');
     } else {
+        story("modified", JSON.stringify(e.target.toJSON(['name'])));
         emitModified('object');
-        storyLine.push('object modified');
     }
-    story();
 });
 canvas.on("erasing:end", function () {
     // e.path.globalCompositeOperation = 'destination-out';
-    story();
-    emitObject();
+    // emitObject();
     console.log("erasing:end");
 });
-
-// canvas.on("selection:created", function() {
-//     console.log("selecion created");
+// canvas.on("selection:created", function(e) {
+//     console.log("selection:created");
 // });
-// canvas.on("selection:updated", function() {
-//     console.log("selecion updated");
+// canvas.on("selection:updated", function(e) {
+//     console.log("selection:updated");
 // });
-// canvas.on("selection:cleared", function() {
-//     console.log("selecion cleared");
-// });
-// canvas.on("before:selection:cleared", function() {
-//     console.log("before selecion cleared");
+// canvas.on("before:selection:cleared", function(e) {
+//     console.log("before:selection:cleared");
 // });
 
 // let rendrd = 0;
@@ -220,13 +190,13 @@ function deleteObject(eventData, transform) {
     let activeGroup = canvas.getActiveObjects();
 
     if (activeGroup) {
-        story();
+        // addToStory('object');
         canvas.discardActiveObject();
         activeGroup.forEach(function (object) {
             sendCommand(object.name)
             canvas.remove(object);
         });
-        sendCommand("deleteDone");
+        sendCommand('deleteDone');
     }
 }
 
@@ -278,16 +248,12 @@ function cloneObject() {
 
 // Clear canvas
 function clearCanvas() {
-    story();
     let objects = canvas.getObjects();
     objects.forEach(function (object) {
-        sendCommand(object.name)
         canvas.remove(object);
     });
-    sendCommand("deleteDone");
 }
 
-// Settings
 // Brush settings
 function setBrush(options) {
     if (options.width !== undefined) {
@@ -322,7 +288,6 @@ $(".color-input").on('change', function () {
     $('.colors').css('background-color', val);
 });
 
-// Canvas settings
 // Set canvas pattern
 let currentPattern = 'none';
 function setPattern(name) {
@@ -334,8 +299,11 @@ function setPattern(name) {
     $(`.${name}`).addClass('active');
     currentPattern = name;
 };
+// Default canvas pattern
+setTimeout(() => {
+    setPattern('none');
+}, 300);
 
-// Panel
 let menuToggle = false;
 
 // Brush color panel
@@ -376,7 +344,7 @@ $('.small').click(function(){
     $('.sizes').css('background-size','50%');
 });
 $('.middle').click(function(){
-    $('.sizes').css('background-size','70%');
+    $('.sizes').css('background-size','76%');
 });
 $('.big').click(function(){
     $('.sizes').css('background-size','110%');
