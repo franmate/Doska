@@ -1,7 +1,7 @@
 {
-  "name": "list",
-  "version": "1.0.0",
-  "description": "List — drawing application with rooms",
+  "name": "doska",
+  "version": "2.0.0",
+  "description": "Doska — drawing application with rooms",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Stepan-Samutichev/List.git"
+    "url": "git+https://github.com/Stepan-Samutichev/Doska.git"
   },
   "author": "Stepan Samutichev",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Stepan-Samutichev/List/issues"
+    "url": "https://github.com/Stepan-Samutichev/Doska/issues"
   },
-  "homepage": "https://github.com/Stepan-Samutichev/List#readme",
+  "homepage": "https://github.com/Stepan-Samutichev/Doska#readme",
   "dependencies": {
     "compression": "^1.7.4",
     "ejs": "^3.1.6",

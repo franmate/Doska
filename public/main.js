@@ -87,12 +87,10 @@ canvas.on("object:added", function (e) {
     }
 });
 canvas.on("path:created", function (e) {
-    clearRedo();
-    story("added", JSON.stringify(e.path.toJSON(['name'])));
+    story("added", e.path.name, JSON.stringify(e.path.toJSON(['name'])));
     emitObject();
 });
 canvas.on("object:modified", function (e) {
-    clearRedo();
     if (e.target.type === 'activeSelection') {
         let i = 0;
         let activeObjectNames = [];
@@ -105,7 +103,7 @@ canvas.on("object:modified", function (e) {
             activeObjects.push(canvas.getItemByName(element));
         });
         activeObjects.forEach(element => {
-            story(i, JSON.stringify(element.toJSON(['name'])));
+            story(i, element.name, JSON.stringify(element.toJSON(['name'])));
             i++;
         });
         let selection = new fabric.ActiveSelection(activeObjects, {
@@ -114,7 +112,7 @@ canvas.on("object:modified", function (e) {
         canvas.setActiveObject(selection);
         // emitModified('group');
     } else {
-        story("modified", JSON.stringify(e.target.toJSON(['name'])));
+        story("modified", e.target.name, JSON.stringify(e.target.toJSON(['name'])));
         emitModified('object');
     }
 });

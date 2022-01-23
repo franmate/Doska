@@ -1,4 +1,4 @@
-# List
+# Doska
 Drawing application with rooms
 
 - Fabric.js
@@ -6,7 +6,7 @@ Drawing application with rooms
 
 Clone repository:
 ```
-git clone https://github.com/Stepan-Samutichev/List.git
+git clone https://github.com/Stepan-Samutichev/Doska.git
 ```
 
 ```
@@ -14,4 +14,4 @@ npm install
 npm start
 ```
 
-_ _https://listok.herokuapp.com/_ _
+_https://listok.herokuapp.com/_
