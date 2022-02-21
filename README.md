@@ -1,7 +1,6 @@
 # Doska
-Drawing application with rooms
+Collaborative drawing application with rooms
 
-- Fabric.js
 - Socket.io
 
 Clone repository:
@@ -14,4 +13,4 @@ npm install
 npm start
 ```
 
-_https://listok.herokuapp.com/_
+_https://doska2.herokuapp.com/_
