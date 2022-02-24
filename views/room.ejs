@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="stylesheet" href="assets/styles.css">
-    <script src="/socket.io/socket.io.js" defer></script>
     <script src="jquery-3.6.0.min.js" defer></script>
-    <script src="fabric.min.js" defer></script>
+    <script src="/socket.io/socket.io.js" defer></script>
+    <script src="simplify-svg-path.js" defer></script>
+    <script src="simplify.js" defer></script>
+    <script src="svg-pan-zoom.min.js" defer></script>
     <script src="main.js" defer></script>
-    <script src="story.js" defer></script>
-    <script src="socket.js" defer></script>
+    <script src="functions.js" defer></script>
     <script src="pan.js" defer></script>
-    <script src="hammer.min.js" defer></script>
-    <script src="touch.js" defer></script>
-    <script src="export.js" defer></script>
+    <!-- <script src="story.js" defer></script> -->
+    <!-- <script src="sync.js" defer></script> -->
+    <script src="settings.js" defer></script>
+    <!-- <script src="hammer.min.js" defer></script> -->
+    <!-- <script src="touch.js" defer></script> -->
+    <!-- <script src="export.js" defer></script> -->
     <script>
         const ROOM_ID = "<%= roomId %>"
     </script>
@@ -24,28 +30,31 @@
     <title>Doska</title>
     <link rel="icon" href="assets/favicon.svg">
 </head>
+
 <body>
-    <div class="container">
-
+    <svg xmlns="http://www.w3.org/2000/svg" id="board" viewBox="0 0 100 100">
+        <!-- <g id="g444" fill="none">
+            <rect width="300" height="100" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />
+        </g> -->
+    </svg>
+    <div class="panels">
         <div class="topPanel">
-            <!-- <button type="button" class="link" onclick="copyLink()"></button> -->
+            <button type="button" class="link" onclick="copyLink()"></button>
             <button type="button" class="download" onclick="downloadImage()"></button>
-        </div>        
-
-        <div id="canvasWrapper">
-            <canvas id="c" style="position: relative; top: 0; bottom: 0; left: 0; right: 0; z-index: 2;"></canvas>
         </div>
 
         <div class="dockPanel">
             <div class="main-tools">
                 <div class="tools">
                     <button type="button" class="undo" onclick="undo(), sendCommand('undo')"></button>
+                    <button type="button" class="redo" onclick="redo(), sendCommand('redo')"></button>
                 </div>
                 <div class="tools center">
                     <button type="button" class="select" id="select" onclick="changeAction(this)"></button>
                     <button type="button" class="pen" id="brush" onclick="changeAction(this)"></button>
                     <button type="button" class="eraser" id="erase" onclick="changeAction(this)"></button>
-                    <button type="button" class="clear" onclick="clearCanvas(), sendCommand('clear')"></button>
+                    <!-- <button type="button" class="clear" onclick="clear(), sendCommand('clear')"></button> -->
+                    <button type="button" class="clear" onclick="clearBoard()"></button>
                 </div>
                 <!-- <div class="tools canvasControlls">
                     <input name="file" type="file" id="uploader" accept="image/png, image/gif, image/jpeg"/>
@@ -59,11 +68,11 @@
             </div>
             <div class="tools brushSizes settings">
                 <button class="small" onclick="setBrush({width: 3})"></button>
-                <button class="middle active" onclick="setBrush({width: 5})"></button>
-                <button class="big" onclick="setBrush({width: 10})"></button>
+                <button class="middle active" onclick="setBrush({width: 4})"></button>
+                <button class="big" onclick="setBrush({width: 5})"></button>
             </div>
             <div class="tools brushColors settings">
-                <button class="color black active" data-value="#000000"></button>
+                <button class="color black active" data-value="#000"></button>
                 <button class="color red" data-value="#D01919"></button>
                 <button class="color yellow" data-value="#EAAE00"></button>
                 <button class="color green" data-value="#16AB39"></button>
@@ -79,4 +88,5 @@
         </div>
     </div>
 </body>
+
 </html>

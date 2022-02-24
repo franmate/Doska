@@ -72,7 +72,7 @@ io.on('connection', socket => {
 })
 
 server.listen(PORT, () => {
-    console.log('Сервер запущен на порту ' + PORT)
+    console.log('Server running on ' + PORT)
 })
 
 // socket.on('new user', (usr) => {
