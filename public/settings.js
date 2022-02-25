@@ -4,11 +4,11 @@ let colorOption = '#000'
 
 // Change tool
 function changeAction(target) {
-    ['select','erase','brush'].forEach(action => {
+    ['select', 'erase', 'brush'].forEach(action => {
         const t = document.getElementById(action);
         t.classList.remove('active')
     })
-    if(typeof target==='string') target = document.getElementById(target)
+    if (typeof target === 'string') target = document.getElementById(target)
     target.classList.add('active')
     switch (target.id) {
         case "select":
@@ -57,13 +57,13 @@ $(".brushColors button").on('click', function () {
     let val = $(this).data('value')
     activeColor = val
     $("#brushColors").val(val)
-    setBrush({color: val})
+    setBrush({ color: val })
     $('.colors').css('background-color', val)
 })
 $(".color-input").on('change', function () {
     let val = $(this).val()
     activeColor = val
-    setBrush({color: val})
+    setBrush({ color: val })
     $('.colors').css('background-color', val)
 })
 
@@ -72,7 +72,7 @@ let currentPattern = 'none'
 function setPattern(name) {
     // canvas.setBackgroundColor({source: `/assets/patterns/pattern_${name}.svg`, repeat: 'repeat'}, function () {
     // })
-    $('.patterns').css('background-image',`url(../assets/icons/${name}.svg)`)
+    $('.patterns').css('background-image', `url(../assets/icons/${name}.svg)`)
     $(".canvasPatterns button").removeClass('active')
     $(`.${name}`).addClass('active')
     currentPattern = name
@@ -104,7 +104,7 @@ board.addEventListener('pointerup', () => {
 let menuToggle = false
 
 // Brush color panel
-$('.colors').click(function(){
+$('.colors').click(function () {
     if (menuToggle === false) {
         fadeIn('.brushColors', 200)
         setTimeout(() => {
@@ -117,14 +117,14 @@ $('.colors').click(function(){
         }, 200)
     }
 })
-$('.color-input').hover(function(){
+$('.color-input').hover(function () {
     menuToggle = false
-}, function(){
+}, function () {
     menuToggle = true
 })
 
 // Brush size panel
-$('.sizes').click(function(){
+$('.sizes').click(function () {
     if (menuToggle === false) {
         fadeIn('.brushSizes', 200)
         setTimeout(() => {
@@ -137,18 +137,18 @@ $('.sizes').click(function(){
         }, 200)
     }
 })
-$('.small').click(function(){
-    $('.sizes').css('background-size','50%')
+$('.small').click(function () {
+    $('.sizes').css('background-size', '50%')
 })
-$('.middle').click(function(){
-    $('.sizes').css('background-size','76%')
+$('.middle').click(function () {
+    $('.sizes').css('background-size', '76%')
 })
-$('.big').click(function(){
-    $('.sizes').css('background-size','110%')
+$('.big').click(function () {
+    $('.sizes').css('background-size', '110%')
 })
 
 // Canvas pattern panel
-$('.patterns').click(function(){
+$('.patterns').click(function () {
     if (menuToggle === false) {
         fadeIn('.canvasPatterns', 200)
         setTimeout(() => {
@@ -162,7 +162,7 @@ $('.patterns').click(function(){
     }
 })
 
-$('body').click(function(){
+$('body').click(function () {
     if (menuToggle === true) {
         fadeOut('.brushColors', 200)
         fadeOut('.brushSizes', 200)

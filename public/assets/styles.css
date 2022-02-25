@@ -210,25 +210,25 @@ button:active:not(.color) :not(.clear) {
     box-shadow: 4px 4px 0px 0px #7a7a7a44;
 }
 .red {
-    background-color: #D01919;
+    background-color: #d01919;
 }
 .red:active {
     box-shadow: 4px 4px 0px 0px #ff6a6444;
 }
 .yellow {
-    background-color: #EAAE00;
+    background-color: #eaae00;
 }
 .yellow:active {
     box-shadow: 4px 4px 0px 0px #ffde4b44;
 }
 .green {
-    background-color: #16AB39;
+    background-color: #16ab39;
 }
 .green:active {
     box-shadow: 4px 4px 0px 0px #2dff6144;
 }
 .blue {
-    background-color: #1678C2;
+    background-color: #1678c2;
 }
 .blue:active {
     box-shadow: 4px 4px 0px 0px #50a2ff44;

@@ -10,10 +10,10 @@
     <script src="/socket.io/socket.io.js" defer></script>
     <script src="simplify-svg-path.js" defer></script>
     <script src="simplify.js" defer></script>
-    <script src="svg-pan-zoom.min.js" defer></script>
-    <script src="main.js" defer></script>
+    <script src="panzoom.min.js" defer></script>
     <script src="functions.js" defer></script>
     <script src="pan.js" defer></script>
+    <script src="main.js" defer></script>
     <!-- <script src="story.js" defer></script> -->
     <!-- <script src="sync.js" defer></script> -->
     <script src="settings.js" defer></script>
@@ -32,10 +32,8 @@
 </head>
 
 <body>
-    <svg xmlns="http://www.w3.org/2000/svg" id="board" viewBox="0 0 100 100">
-        <!-- <g id="g444" fill="none">
-            <rect width="300" height="100" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />
-        </g> -->
+    <svg xmlns="http://www.w3.org/2000/svg" id="board">
+        <g id="scene"></g>
     </svg>
     <div class="panels">
         <div class="topPanel">

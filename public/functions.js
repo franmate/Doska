@@ -1,11 +1,10 @@
 function clearBoard() {
-    let el = document.getElementById('board')
     board.style.opacity = 1;
     board.style.transform = `scale(0.8)`;
     board.style.transition = `all ${150}ms`;
     board.style.opacity = 0;
     setTimeout(() => {
-        document.getElementsByTagName('svg')[0].innerHTML=''
+        scene.innerHTML = ''
         board.style.opacity = 1;
         board.style.transform = `scale(1)`;
     }, 150);

@@ -1,12 +1,9 @@
-var panZoom = window.panZoom = svgPanZoom('#board', {
-    zoomEnabled: true,
-    controlIconsEnabled: true,
-    fit: 1,
-    center: 1
-});
-
-$(window).resize(function () {
-    panZoom.resize();
-    panZoom.fit();
-    panZoom.center();
+let instance = panzoom(scene, {
+    maxZoom: 1.6,
+    minZoom: 0.1,
+    zoomSpeed: 0.08,
+    beforeMouseDown: function (e) {
+        let shouldIgnore = !e.button
+        return shouldIgnore
+    }
 })

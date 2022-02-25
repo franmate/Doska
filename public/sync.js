@@ -113,7 +113,7 @@ socket.on('get canvas', function (obj) {
     canvas.loadFromJSON(obj.data)
     undo_history = obj.undo
     redo_history = obj.redo
-    $('.patterns').css('background-image',`url(../assets/icons/${obj.pattern}.svg)`)
+    $('.patterns').css('background-image', `url(../assets/icons/${obj.pattern}.svg)`)
     $(".canvasPatterns button").removeClass('active')
     $(`.${obj.pattern}`).addClass('active')
     currentPattern = obj.pattern

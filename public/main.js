@@ -1,7 +1,8 @@
 const svg = document.getElementById('board')
+const scene = document.getElementById('scene')
 
 function appendPath() {
-    const path = svg.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'path'))
+    const path = scene.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'path'))
     path.setAttribute("stroke", colorOption)
     path.setAttribute("stroke-width", widthOption)
     return path
@@ -15,14 +16,16 @@ let points
 let simplify2Path
 
 svg.onpointerdown = function (event) {
-    points = [[event.offsetX, event.offsetY]]
-    simplify2Path = appendPath()
-    this.setPointerCapture(event.pointerId)
+    if (event.button == 0) {
+        points = [[(event.offsetX - scene.transform.baseVal[0].matrix.e) / scene.transform.baseVal[0].matrix.a, (event.offsetY - scene.transform.baseVal[0].matrix.f) / scene.transform.baseVal[0].matrix.a]]
+        simplify2Path = appendPath()
+        this.setPointerCapture(event.pointerId)
+    }
 }
 
 svg.onpointermove = function (event) {
     if (this.hasPointerCapture(event.pointerId)) {
-        points.push([event.offsetX, event.offsetY])
+        points.push([(event.offsetX - scene.transform.baseVal[0].matrix.e) / scene.transform.baseVal[0].matrix.a, (event.offsetY - scene.transform.baseVal[0].matrix.f) / scene.transform.baseVal[0].matrix.a])
         const simplifyJsApplied = simplify(points.map(function (p) { return { x: p[0], y: p[1] } }, 2.5), true)
         simplify2Path.setAttribute('d', pointsToPath(points))
         // simplify2Path.setAttribute('d', simplifySvgPath(simplifyJsApplied.map(function (p) { return [p.x, p.y] }), { tolerance: 2.5, precision: 0 }))
@@ -30,9 +33,11 @@ svg.onpointermove = function (event) {
 }
 
 svg.onpointerup = function (event) {
-    if (this.hasPointerCapture(event.pointerId)) {
-        points.push([event.offsetX, event.offsetY])
-        const simplifyJsApplied = simplify(points.map(function (p) { return { x: p[0], y: p[1] } }, 2.5), true)
-        simplify2Path.setAttribute('d', simplifySvgPath(simplifyJsApplied.map(function (p) { return [p.x, p.y] }), { tolerance: 2.5, precision: 0 }))
+    if (event.button == 0) {
+        if (this.hasPointerCapture(event.pointerId)) {
+            points.push([(event.offsetX - scene.transform.baseVal[0].matrix.e) / scene.transform.baseVal[0].matrix.a, (event.offsetY - scene.transform.baseVal[0].matrix.f) / scene.transform.baseVal[0].matrix.a])
+            const simplifyJsApplied = simplify(points.map(function (p) { return { x: p[0], y: p[1] } }, 2.5), true)
+            simplify2Path.setAttribute('d', simplifySvgPath(simplifyJsApplied.map(function (p) { return [p.x, p.y] }), { tolerance: 2.5, precision: 0 }))
+        }
     }
 }
