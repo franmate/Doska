@@ -32,6 +32,7 @@
 </head>
 
 <body>
+    <div id="background"></div>
     <svg xmlns="http://www.w3.org/2000/svg" id="board">
         <g id="scene"></g>
     </svg>
@@ -51,8 +52,7 @@
                     <button type="button" class="select" id="select" onclick="changeAction(this)"></button>
                     <button type="button" class="pen" id="brush" onclick="changeAction(this)"></button>
                     <button type="button" class="eraser" id="erase" onclick="changeAction(this)"></button>
-                    <!-- <button type="button" class="clear" onclick="clear(), sendCommand('clear')"></button> -->
-                    <button type="button" class="clear" onclick="clearBoard()"></button>
+                    <button type="button" class="clear" onclick="clearBoard(), sendCommand('clear')"></button>
                 </div>
                 <!-- <div class="tools canvasControlls">
                     <input name="file" type="file" id="uploader" accept="image/png, image/gif, image/jpeg"/>

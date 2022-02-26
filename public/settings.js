@@ -29,7 +29,6 @@ function changeAction(target) {
             break
     }
 }
-
 // Default tool
 changeAction('brush')
 
@@ -37,7 +36,7 @@ changeAction('brush')
 function setBrush(options) {
     if (options.width !== undefined) {
         // canvas.freeDrawingBrush.width = parseInt(options.width, 10)
-        widthOption = parseInt(options.width, 10);
+        widthOption = parseInt(options.width, 10)
     }
 
     if (options.color !== undefined) {
@@ -68,10 +67,10 @@ $(".color-input").on('change', function () {
 })
 
 // Set canvas pattern
+let background = document.getElementById('background')
 let currentPattern = 'none'
 function setPattern(name) {
-    // canvas.setBackgroundColor({source: `/assets/patterns/pattern_${name}.svg`, repeat: 'repeat'}, function () {
-    // })
+    background.style.backgroundImage = `url(../assets/patterns/pattern_${name}.svg)`
     $('.patterns').css('background-image', `url(../assets/icons/${name}.svg)`)
     $(".canvasPatterns button").removeClass('active')
     $(`.${name}`).addClass('active')

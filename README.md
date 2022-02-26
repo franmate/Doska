@@ -13,4 +13,4 @@ npm install
 npm start
 ```
 
-_https://doska-ru.herokuapp.com/_
+_https://doska2.herokuapp.com/_

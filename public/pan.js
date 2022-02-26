@@ -7,3 +7,9 @@ let instance = panzoom(scene, {
         return shouldIgnore
     }
 })
+
+instance.on('transform', function () {
+    background.style.backgroundPositionX = `${scene.transform.baseVal[0].matrix.e}px`
+    background.style.backgroundPositionY = `${scene.transform.baseVal[0].matrix.f}px`
+    background.style.backgroundSize = `${55 * scene.transform.baseVal[0].matrix.a}px`
+})
