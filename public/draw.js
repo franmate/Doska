@@ -1,6 +1,3 @@
-const svg = document.getElementById('board')
-const scene = document.getElementById('scene')
-
 function appendPath() {
     const path = scene.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'path'))
     path.setAttribute("stroke", colorOption)
@@ -15,7 +12,7 @@ function pointsToPath(points) {
 let points
 let simplify2Path
 
-svg.onpointerdown = function (event) {
+board.onpointerdown = function (event) {
     if (event.button == 0) {
         points = [[(event.offsetX - scene.transform.baseVal[0].matrix.e) / scene.transform.baseVal[0].matrix.a, (event.offsetY - scene.transform.baseVal[0].matrix.f) / scene.transform.baseVal[0].matrix.a]]
         simplify2Path = appendPath()
@@ -23,7 +20,7 @@ svg.onpointerdown = function (event) {
     }
 }
 
-svg.onpointermove = function (event) {
+board.onpointermove = function (event) {
     if (this.hasPointerCapture(event.pointerId)) {
         points.push([(event.offsetX - scene.transform.baseVal[0].matrix.e) / scene.transform.baseVal[0].matrix.a, (event.offsetY - scene.transform.baseVal[0].matrix.f) / scene.transform.baseVal[0].matrix.a])
         const simplifyJsApplied = simplify(points.map(function (p) { return { x: p[0], y: p[1] } }, 2.5), true)
@@ -32,7 +29,7 @@ svg.onpointermove = function (event) {
     }
 }
 
-svg.onpointerup = function (event) {
+board.onpointerup = function (event) {
     if (event.button == 0) {
         if (this.hasPointerCapture(event.pointerId)) {
             points.push([(event.offsetX - scene.transform.baseVal[0].matrix.e) / scene.transform.baseVal[0].matrix.a, (event.offsetY - scene.transform.baseVal[0].matrix.f) / scene.transform.baseVal[0].matrix.a])

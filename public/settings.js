@@ -4,7 +4,7 @@ let colorOption = '#000'
 
 // Change tool
 function changeAction(target) {
-    ['select', 'erase', 'brush'].forEach(action => {
+    ['select', 'eraser', 'pen'].forEach(action => {
         const t = document.getElementById(action);
         t.classList.remove('active')
     })
@@ -14,13 +14,11 @@ function changeAction(target) {
         case "select":
             // canvas.isDrawingMode = false
             break
-        case "erase":
-            // canvas.freeDrawingBrush = new fabric.EraserBrush(canvas)
+        case "eraser":
             // canvas.freeDrawingBrush.width = widthOption
             // canvas.isDrawingMode = true
             break
-        case "brush":
-            // canvas.freeDrawingBrush = new fabric.PencilBrush(canvas)
+        case "pen":
             // canvas.freeDrawingBrush.width = widthOption
             // canvas.freeDrawingBrush.color = colorOption
             // canvas.isDrawingMode = true
@@ -30,144 +28,109 @@ function changeAction(target) {
     }
 }
 // Default tool
-changeAction('brush')
+changeAction('pen')
 
 // Brush settings
 function setBrush(options) {
+    // Width settings
     if (options.width !== undefined) {
-        // canvas.freeDrawingBrush.width = parseInt(options.width, 10)
-        widthOption = parseInt(options.width, 10)
+        widthOption = options.width
+        document.querySelector('#sizes button.active').classList.remove('active')
+    }
+    if (options.width == 3) {
+        size.style.backgroundSize = '50%'
+        small.classList.add('active')
+    }
+    if (options.width == 4) {
+        size.style.backgroundSize = '76%'
+        middle.classList.add('active')
+    }
+    if (options.width == 5) {
+        size.style.backgroundSize = '110%'
+        big.classList.add('active')
     }
 
+    // Height settings
     if (options.color !== undefined) {
-        // canvas.freeDrawingBrush.color = options.color
-        colorOption = options.color
+        let val = options.color
+        colorOption = val
+        color.style.backgroundColor = val
     }
 }
-
-// Set brush size
-$(".brushSizes button").on('click', function () {
-    $(".brushSizes button").removeClass('active')
-    $(this).addClass('active')
-})
-
-// Set brush color
-$(".brushColors button").on('click', function () {
-    let val = $(this).data('value')
-    activeColor = val
-    $("#brushColors").val(val)
-    setBrush({ color: val })
-    $('.colors').css('background-color', val)
-})
-$(".color-input").on('change', function () {
-    let val = $(this).val()
-    activeColor = val
-    setBrush({ color: val })
-    $('.colors').css('background-color', val)
-})
+colorInput.onchange = function () {
+    setBrush({ color: colorInput.value })
+}
 
 // Set canvas pattern
-let background = document.getElementById('background')
 let currentPattern = 'none'
 function setPattern(name) {
     background.style.backgroundImage = `url(../assets/patterns/pattern_${name}.svg)`
-    $('.patterns').css('background-image', `url(../assets/icons/${name}.svg)`)
-    $(".canvasPatterns button").removeClass('active')
-    $(`.${name}`).addClass('active')
+    pattern.style.backgroundImage = `url(../assets/icons/${name}.svg)`
+    document.querySelector('#patterns button.active').classList.remove('active')
+    document.getElementById(name).classList.add('active')
     currentPattern = name
 };
-
-// Default canvas pattern
-setTimeout(() => {
-    setPattern('none')
-}, 300)
-
-// Hide panels on drawing/panning
-// let animationLock = false
-board.addEventListener('pointerdown', () => {
-    fadeOut('.dockPanel', 200)
-    fadeOut('.topPanel', 200)
-    // animationLock = true
-})
-board.addEventListener('pointerup', () => {
-    // let lTor = 0
-    // let checkLockAnimation = setInterval(() => {
-    //     interval
-    // }, interval);
-    setTimeout(() => {
-        fadeIn('.dockPanel', 250)
-        fadeIn('.topPanel', 250)
-    }, 450)
-})
+setPattern('none')
 
 let menuToggle = false
-
 // Brush color panel
-$('.colors').click(function () {
+color.onclick = function () {
     if (menuToggle === false) {
-        fadeIn('.brushColors', 200)
+        fadeIn('#colors', 200)
         setTimeout(() => {
             menuToggle = true
         }, 200)
     } else {
-        fadeOut('.brushColors', 200)
+        fadeOut('#colors', 200)
         setTimeout(() => {
             menuToggle = false
         }, 200)
     }
-})
-$('.color-input').hover(function () {
+}
+colorInput.onpointerenter = function () {
     menuToggle = false
-}, function () {
+}
+colorInput.onpointerleave = function () {
     menuToggle = true
-})
+}
 
 // Brush size panel
-$('.sizes').click(function () {
+size.onclick = function () {
     if (menuToggle === false) {
-        fadeIn('.brushSizes', 200)
+        fadeIn('#sizes', 200)
         setTimeout(() => {
             menuToggle = true
         }, 200)
     } else {
-        fadeOut('.brushSizes', 200)
+        fadeOut('#sizes', 200)
         setTimeout(() => {
             menuToggle = false
         }, 200)
     }
-})
-$('.small').click(function () {
-    $('.sizes').css('background-size', '50%')
-})
-$('.middle').click(function () {
-    $('.sizes').css('background-size', '76%')
-})
-$('.big').click(function () {
-    $('.sizes').css('background-size', '110%')
-})
+}
 
 // Canvas pattern panel
-$('.patterns').click(function () {
+pattern.onclick = function () {
     if (menuToggle === false) {
-        fadeIn('.canvasPatterns', 200)
+        fadeIn('#patterns', 200)
         setTimeout(() => {
             menuToggle = true
         }, 200)
     } else {
-        fadeOut('.canvasPatterns', 200)
+        fadeOut('#patterns', 200)
         setTimeout(() => {
             menuToggle = false
         }, 200)
     }
-})
+}
 
-$('body').click(function () {
+document.getElementsByTagName('body')[0].onclick = function () {
     if (menuToggle === true) {
-        fadeOut('.brushColors', 200)
-        fadeOut('.brushSizes', 200)
-        fadeOut('.canvasPatterns', 200)
+        fadeOut('#colors', 200)
+        fadeOut('#sizes', 200)
+        fadeOut('#patterns', 200)
         setTimeout(() => {
             menuToggle = false
         }, 200)
     }
-})
+}
