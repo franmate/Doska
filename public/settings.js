@@ -1,6 +1,8 @@
 // Default brush settings
-let widthOption = 4
-let colorOption = '#000'
+let widthOption
+let colorOption
+let prevWidthOption = 4
+let prevColorOption = '#000'
 
 // Change tool
 function changeAction(target) {
@@ -12,16 +14,16 @@ function changeAction(target) {
     target.classList.add('active')
     switch (target.id) {
         case "select":
-            // canvas.isDrawingMode = false
             break
         case "eraser":
-            // canvas.freeDrawingBrush.width = widthOption
-            // canvas.isDrawingMode = true
+            prevWidthOption = widthOption
+            widthOption = widthOption * 5
+            prevColorOption = colorOption
+            colorOption = '#fff'
             break
         case "pen":
-            // canvas.freeDrawingBrush.width = widthOption
-            // canvas.freeDrawingBrush.color = colorOption
-            // canvas.isDrawingMode = true
+            widthOption = prevWidthOption
+            colorOption = prevColorOption
             break
         default:
             break
