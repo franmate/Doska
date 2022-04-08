@@ -11,9 +11,9 @@ socket.emit('join-room', ROOM_ID, 10)
 // })
 
 // Socket emit
-function emitObject() {
-    let objects = document.querySelectorAll('#scene path')
-    socket.emit('send object', JSON.stringify(objects[objects.length - 1].outerHTML))
+// Send object
+function emitObject(event) {
+    socket.emit('send object', JSON.stringify(event.outerHTML))
 }
 
 // Emit modified object/group
@@ -40,7 +40,7 @@ function emitObject() {
 //     lastObject = newObject
 // }
 
-// Emit command
+// Send command
 function sendCommand(command) {
     socket.emit('send command', JSON.stringify(command))
 }
@@ -49,7 +49,12 @@ function sendCommand(command) {
 // Get object
 socket.on('get object', function (objectJSON) {
     let object = JSON.parse(objectJSON)
-    scene.insertAdjacentHTML('beforeend', object)
+    let objectHasScript = object.indexOf('script')
+    if (objectHasScript == -1) {
+        scene.insertAdjacentHTML('beforeend', object)
+    } else {
+        console.log('Path sync failed!');
+    }
 })
 
 // Get command

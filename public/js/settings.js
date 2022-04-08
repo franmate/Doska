@@ -5,15 +5,16 @@ let colorOption = '#000'
 
 // Change tool
 function changeAction(target) {
-    ['select', 'eraser', 'pen'].forEach(action => {
+    ['pointer', 'eraser', 'pen'].forEach(action => {
         const t = document.getElementById(action);
         t.classList.remove('active')
     })
     if (typeof target === 'string') target = document.getElementById(target)
     target.classList.add('active')
     switch (target.id) {
-        case "select":
-            boardMode = 'select'
+        case "pointer":
+            boardMode = 'pointer'
+            applyDraggable()
             break
         case "eraser":
             boardMode = 'eraser'

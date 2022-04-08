@@ -1,7 +1,7 @@
 {
   "name": "doska",
   "version": "2.0.0",
-  "description": "Doska — collaborative drawing application with rooms",
+  "description": "Online drawboard",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -18,9 +18,9 @@
   },
   "homepage": "https://github.com/Stepan-Samutichev/Doska#readme",
   "dependencies": {
-    "express": "^4.17.3",
-    "ejs": "^3.1.6",
-    "socket.io": "^4.4.1",
+    "express": "^4.18.1",
+    "ejs": "^3.1.8",
+    "socket.io": "^4.5.0",
     "compression": "^1.7.4",
     "uuid": "^8.3.2"
   }

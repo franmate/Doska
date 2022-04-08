@@ -1,5 +1,8 @@
-let paths = document.getElementsByTagName('path')
-let activeObject
-scene.onpointerdown = function (event) {
-    activeObject = event.target
+function applyDraggable() {
+    $(function () {
+        $('#board').selectable()
+    })
 }
+// function name(params) {
+
+// }

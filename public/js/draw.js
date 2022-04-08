@@ -47,12 +47,14 @@ board.onpointerup = function (event) {
             points.push([(event.offsetX - transformX) / transformScale, (event.offsetY - transformY) / transformScale])
             const simplifyJsApplied = simplify(points.map(function (p) { return { x: p[0], y: p[1] } }, 2.5), true)
             simplify2Path.setAttribute('d', simplifySvgPath(simplifyJsApplied.map(function (p) { return [p.x, p.y] }), { tolerance: 2.5, precision: 0 }))
-            emitObject();
+            emitObject(simplify2Path)
         }
     } else if (event.button == 0 && !lockDrawing && boardMode == 'eraser') {
         if (this.hasPointerCapture(event.pointerId)) {
             points.push([(event.offsetX - transformX) / transformScale, (event.offsetY - transformY) / transformScale])
-            emitObject();
+            const simplifyJsApplied = simplify(points.map(function (p) { return { x: p[0], y: p[1] } }, 2.5), true)
+            simplify2Path.setAttribute('d', simplifySvgPath(simplifyJsApplied.map(function (p) { return [p.x, p.y] }), { tolerance: 0, precision: 0 }))
+            emitObject(simplify2Path)
         }
     }
     scene.style.willChange = 'auto'

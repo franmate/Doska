@@ -5,20 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/jquery-ui.min.css">
     <script src="/socket.io/socket.io.js" defer></script>
     <script src="js/lib/simplify-svg-path.js" defer></script>
     <script src="js/lib/simplify.js" defer></script>
     <script src="js/lib/panzoom.js" defer></script>
-    <!-- <script src="js/lib/interact.min.js" defer></script> -->
     <script src="js/pan-zoom.js" defer></script>
+    <script src="js/lib/jquery-3.6.0.min.js" defer></script>
+    <script src="js/lib/jquery-ui.min.js" defer></script>
+    <script src="js/lib/plain-draggable.min.js" defer></script>
     <script src="js/drag-resize.js" defer></script>
     <script src="js/settings.js" defer></script>
     <script src="js/draw.js" defer></script>
     <script src="js/functions.js" defer></script>
     <script src="js/panels.js" defer></script>
     <!-- <script src="js/story.js" defer></script> -->
-    <!-- <script src="js/sync.js" defer></script> -->
+    <script src="js/sync.js" defer></script>
     <!-- <script src="js/export.js" defer></script> -->
     <script>
         const ROOM_ID = "<%= roomId %>"
@@ -27,7 +30,7 @@
         const username = window.prompt("Hello! Type your name:");
         socket.emit('new user', username);
     </script> -->
-    <title>Doska</title>
+    <title>Доска</title>
     <link rel="icon" href="assets/favicon.svg">
 </head>
 
@@ -39,7 +42,7 @@
     <div class="panels">
         <div class="topPanel">
             <button type="button" id="link" onclick="copyLink()"></button>
-            <button type="button" id="download" onclick="exportBoardAsPNG()"></button>
+            <!-- <button type="button" id="download" onclick="exportBoardAsPNG()"></button> -->
         </div>
 
         <div class="dockPanel">
@@ -49,31 +52,25 @@
                     <button type="button" id="redo" onclick="redo(), sendCommand('redo')"></button>
                 </div>
                 <div class="tools center">
-                    <button type="button" id="select" onclick="changeAction(this)"></button>
-                    <button type="button" id="pen" onclick="changeAction(this)"></button>
+                    <button type="button" id="pointer" onclick="changeAction(this)"></button>
+                    <button type="button" id="pen" class="active" onclick="changeAction(this)"></button>
                     <button type="button" id="eraser" onclick="changeAction(this)"></button>
                     <input type="file" accept="image/gif, image/jpeg, image/png" name="image" id="file" onchange="addImage(event)" style="display: none;">
                     <label for="file" id="photo"></label>
-                    <button type="button" id="pen" class="active" onclick="changeAction(this)"></button>
-                    <button type="button" id="eraser" onclick="changeAction(this)"></button>
                     <button type="button" id="clear" onclick="clearBoard(), sendCommand('clear')"></button>
                 </div>
-                <!-- <div class="tools canvasControlls">
-                    <input name="file" type="file" id="uploader" accept="image/png, image/gif, image/jpeg"/>
-                    <label for="uploader" class="uploader-button"></label>
-                </div> -->
                 <div class="tools">
-                    <button id="color"></button>
-                    <button id="size"></button>
-                    <button id="pattern"></button>
+                    <button id="color" onwheel="scrollColor(event)"></button>
+                    <button id="size" onwheel="scrollSize(event)"></button>
+                    <button id="pattern" onwheel="scrollPattern(event)"></button>
                 </div>
             </div>
-            <div id="sizes" class="tools settings">
+            <div id="sizes" class="tools settings" onwheel="scrollSize(event)">
                 <button id="small" onclick="setBrush({width: 3})"></button>
                 <button id="middle" class="active" onclick="setBrush({width: 4})"></button>
                 <button id="big" onclick="setBrush({width: 5})"></button>
             </div>
-            <div id="colors" class="tools settings">
+            <div id="colors" class="tools settings" onwheel="scrollColor(event)">
                 <button id="black" class="active" onclick="setBrush({color: '#000'})"></button>
                 <button id="red" onclick="setBrush({color: '#d01919'})"></button>
                 <button id="yellow" onclick="setBrush({color: '#eaae00'})"></button>
@@ -81,7 +78,7 @@
                 <button id="blue" onclick="setBrush({color: '#1678c2'})"></button>
                 <input type="color" id="colorInput">
             </div>
-            <div id="patterns" class="tools settings">
+            <div id="patterns" class="tools settings" onwheel="scrollPattern(event)">
                 <button id="none" class="active" onclick="setPattern('none'), sendCommand('none')"></button>
                 <button id="sq" onclick="setPattern('sq'), sendCommand('sq')"></button>
                 <button id="line" onclick="setPattern('line'), sendCommand('line')"></button>
