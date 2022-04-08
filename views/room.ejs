@@ -54,6 +54,8 @@
                     <button type="button" id="eraser" onclick="changeAction(this)"></button>
                     <input type="file" accept="image/gif, image/jpeg, image/png" name="image" id="file" onchange="addImage(event)" style="display: none;">
                     <label for="file" id="photo"></label>
+                    <button type="button" id="pen" class="active" onclick="changeAction(this)"></button>
+                    <button type="button" id="eraser" onclick="changeAction(this)"></button>
                     <button type="button" id="clear" onclick="clearBoard(), sendCommand('clear')"></button>
                 </div>
                 <!-- <div class="tools canvasControlls">

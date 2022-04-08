@@ -1,9 +1,7 @@
 // Default brush settings
-let boardMode
-let widthOption
-let colorOption
-let prevWidthOption = 4
-let prevColorOption = '#000'
+let boardMode = 'pen'
+let widthOption = 4
+let colorOption = '#000'
 
 // Change tool
 function changeAction(target) {
@@ -19,22 +17,18 @@ function changeAction(target) {
             break
         case "eraser":
             boardMode = 'eraser'
-            prevWidthOption = widthOption
-            widthOption = widthOption * 5
-            prevColorOption = colorOption
-            colorOption = '#fff'
+            color.style.pointerEvents = 'none'
+            color.style.opacity = 0.2
             break
         case "pen":
             boardMode = 'pen'
-            widthOption = prevWidthOption
-            colorOption = prevColorOption
+            color.style.pointerEvents = 'auto'
+            color.style.opacity = 1
             break
         default:
             break
     }
 }
-// Default tool
-changeAction('pen')
 
 // Brush settings
 function setBrush(option) {

@@ -1,7 +1,12 @@
 function appendPath() {
     const path = scene.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'path'))
-    path.setAttribute("stroke", colorOption)
-    path.setAttribute("stroke-width", widthOption)
+    if (boardMode == 'pen') {
+        path.setAttribute("stroke", colorOption)
+        path.setAttribute("stroke-width", widthOption)
+    } else if (boardMode == 'eraser') {
+        path.setAttribute("stroke", '#fff')
+        path.setAttribute("stroke-width", widthOption * 5)
+    }
     return path
 }
 function pointsToPath(points) {
