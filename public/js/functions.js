@@ -8,23 +8,30 @@ function clearBoard() {
     }, 150)
 }
 
+function addImage(event) {
+    let image = document.createElement("img")
+    console.log(image)
+    scene.append(image)
+    image.src = URL.createObjectURL(event.target.files[0]);
+}
+
 const fadeIn = (cl, timeout) => {
-    let el = document.querySelector(cl)
-    el.style.opacity = 0
-    el.style.display = 'flex'
-    el.style.transition = `opacity ${timeout}ms`
+    let element = document.querySelector(cl)
+    element.style.opacity = 0
+    element.style.display = 'flex'
+    element.style.transition = `opacity ${timeout}ms`
     setTimeout(() => {
-        el.style.opacity = 1
+        element.style.opacity = 1
     }, 10)
 }
 
 const fadeOut = (cl, timeout) => {
-    let el = document.querySelector(cl)
-    el.style.opacity = 1
-    el.style.transition = `opacity ${timeout}ms`
-    el.style.opacity = 0
+    let element = document.querySelector(cl)
+    element.style.opacity = 1
+    element.style.transition = `opacity ${timeout}ms`
+    element.style.opacity = 0
 
     setTimeout(() => {
-        el.style.display = 'none'
+        element.style.display = 'none'
     }, timeout)
 }

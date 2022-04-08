@@ -39,7 +39,7 @@
     <div class="panels">
         <div class="topPanel">
             <button type="button" id="link" onclick="copyLink()"></button>
-            <button type="button" id="download" onclick="downloadImage()"></button>
+            <button type="button" id="download" onclick="exportBoardAsPNG()"></button>
         </div>
 
         <div class="dockPanel">
@@ -52,6 +52,8 @@
                     <button type="button" id="select" onclick="changeAction(this)"></button>
                     <button type="button" id="pen" onclick="changeAction(this)"></button>
                     <button type="button" id="eraser" onclick="changeAction(this)"></button>
+                    <input type="file" accept="image/gif, image/jpeg, image/png" name="image" id="file" onchange="addImage(event)" style="display: none;">
+                    <label for="file" id="photo"></label>
                     <button type="button" id="clear" onclick="clearBoard(), sendCommand('clear')"></button>
                 </div>
                 <!-- <div class="tools canvasControlls">

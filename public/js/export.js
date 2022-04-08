@@ -1,5 +1,5 @@
 // Export PNG
-const downloadImage = () => {
+const exportBoardAsPNG = () => {
     const ext = "png"
     const base64 = canvas.toDataURL({
         format: ext,
