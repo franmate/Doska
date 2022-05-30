@@ -53,7 +53,7 @@ socket.on('get object', function (objectJSON) {
     if (objectHasScript == -1) {
         scene.insertAdjacentHTML('beforeend', object)
     } else {
-        console.log('Path sync failed!');
+        console.log('Board sync failed!');
     }
 })
 
