@@ -41,48 +41,48 @@
     </svg>
     <div class="panels">
         <div class="topPanel">
-            <button type="button" id="link" onclick="copyLink()"></button>
+            <button type="button" id="link" onclick="copyLink()" data-tooltip="Скопировать ссылку для приглашения участников в эту комнату"></button>
             <!-- <button type="button" id="download" onclick="exportBoardAsPNG()"></button> -->
         </div>
 
         <div class="dockPanel">
             <div class="main-tools">
                 <div class="tools">
-                    <button type="button" id="undo" onclick="undo(), sendCommand('undo')"></button>
-                    <button type="button" id="redo" onclick="redo(), sendCommand('redo')"></button>
+                    <button type="button" id="undo" onclick="undo(), sendCommand('undo')" data-tooltip="Отменить действие"></button>
+                    <button type="button" id="redo" onclick="redo(), sendCommand('redo')" data-tooltip="Вернуть"></button>
                 </div>
                 <div class="tools center">
-                    <button type="button" id="pointer" onclick="changeAction(this)"></button>
-                    <button type="button" id="pen" class="active" onclick="changeAction(this)"></button>
-                    <button type="button" id="eraser" onclick="changeAction(this)"></button>
+                    <button type="button" id="pointer" onclick="changeAction(this)" data-tooltip="Указатель"></button>
+                    <button type="button" id="pen" class="active" onclick="changeAction(this)" data-tooltip="Маркер"></button>
+                    <button type="button" id="eraser" onclick="changeAction(this)" data-tooltip="Ластик"></button>
                     <input type="file" accept="image/gif, image/jpeg, image/png" name="image" id="file" onchange="addImage(event)" style="display: none;">
-                    <label for="file" id="photo"></label>
-                    <button type="button" id="clear" onclick="clearBoard(), sendCommand('clear')"></button>
+                    <label for="file" id="photo" data-tooltip="Вставить изображение на доску"></label>
+                    <button type="button" id="clear" onclick="clearBoard(), sendCommand('clear')" data-tooltip="Очистить доску"></button>
                 </div>
                 <div class="tools">
-                    <button id="color" onwheel="scrollColor(event)"></button>
-                    <button id="size" onwheel="scrollSize(event)"></button>
-                    <button id="pattern" onwheel="scrollPattern(event)"></button>
+                    <button id="color" onwheel="scrollColor(event)" data-tooltip="Изменить цвет маркера"></button>
+                    <button id="size" onwheel="scrollSize(event)" data-tooltip="Изменить размер маркера"></button>
+                    <button id="pattern" onwheel="scrollPattern(event)" data-tooltip="Изменить фон доски"></button>
                 </div>
             </div>
             <div id="sizes" class="tools settings" onwheel="scrollSize(event)">
-                <button id="small" onclick="setBrush({width: 3})"></button>
-                <button id="middle" class="active" onclick="setBrush({width: 4})"></button>
-                <button id="big" onclick="setBrush({width: 5})"></button>
+                <button id="small" onclick="setBrush({width: 3})" data-tooltip="Маленький маркер"></button>
+                <button id="middle" class="active" onclick="setBrush({width: 4})" data-tooltip="Средний маркер"></button>
+                <button id="big" onclick="setBrush({width: 5})" data-tooltip="Крупный маркер"></button>
             </div>
             <div id="colors" class="tools settings" onwheel="scrollColor(event)">
-                <button id="black" class="active" onclick="setBrush({color: '#000'})"></button>
-                <button id="red" onclick="setBrush({color: '#d01919'})"></button>
-                <button id="yellow" onclick="setBrush({color: '#eaae00'})"></button>
-                <button id="green" onclick="setBrush({color: '#16ab39'})"></button>
-                <button id="blue" onclick="setBrush({color: '#1678c2'})"></button>
-                <input type="color" id="colorInput">
+                <button id="black" class="active" onclick="setBrush({color: '#000'})" data-tooltip="Чёрный маркер"></button>
+                <button id="red" onclick="setBrush({color: '#d01919'})" data-tooltip="Красный маркер"></button>
+                <button id="yellow" onclick="setBrush({color: '#eaae00'})" data-tooltip="Жёлтый маркер"></button>
+                <button id="green" onclick="setBrush({color: '#16ab39'})" data-tooltip="Зелёный маркер"></button>
+                <button id="blue" onclick="setBrush({color: '#1678c2'})" data-tooltip="Синий маркер"></button>
+                <input type="color" id="colorInput" data-tooltip="Палитра цветов маркера">
             </div>
             <div id="patterns" class="tools settings" onwheel="scrollPattern(event)">
-                <button id="none" class="active" onclick="setPattern('none'), sendCommand('none')"></button>
-                <button id="sq" onclick="setPattern('sq'), sendCommand('sq')"></button>
-                <button id="line" onclick="setPattern('line'), sendCommand('line')"></button>
-                <button id="dot" onclick="setPattern('dot'), sendCommand('dot')"></button>
+                <button id="none" class="active" onclick="setPattern('none'), sendCommand('none')" data-tooltip="Пустой фон"></button>
+                <button id="sq" onclick="setPattern('sq'), sendCommand('sq')" data-tooltip="Фон в клетку"></button>
+                <button id="line" onclick="setPattern('line'), sendCommand('line')" data-tooltip="Фон в линейку"></button>
+                <button id="dot" onclick="setPattern('dot'), sendCommand('dot')" data-tooltip="Фон в точку"></button>
             </div>
         </div>
     </div>

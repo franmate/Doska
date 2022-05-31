@@ -95,8 +95,6 @@ body {
     margin: 0 20px 25px;
     padding: 2px;
     display: flex;
-    overflow-x: auto;
-    overflow-y: hidden;
     z-index: 3;
     background-color: #2525257a;
     border-radius: 12px;
@@ -302,6 +300,43 @@ input[type="color"]::-webkit-color-swatch {
     transition: 0.3s;
 }
 
+[data-tooltip] {
+    position: relative; /* Относительное позиционирование */
+}
+[data-tooltip]::after {
+    content: attr(data-tooltip); /* Выводим текст */
+    position: absolute; /* Абсолютное позиционирование */
+    width: auto; /* Ширина подсказки */
+    top: -26px; /* Положение подсказки */
+    left: -22px;
+    background-color: #2525257a;
+    border-radius: 12px;
+    box-shadow: 1px 2px 3px #5454547a, 0px 0px 1px #565656;
+    backdrop-filter: blur(4px);
+    border: 1px solid #848484;
+    font-family: "M PLUS Medium 1c", "Arial", sans-serif;
+    font-size: 14px;
+    color: #fff; /* Цвет текста */
+    white-space: nowrap;
+    padding: 0.5em; /* Поля вокруг текста */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Параметры тени */
+    pointer-events: none; /* Подсказка */
+    opacity: 0; /* Подсказка невидима */
+    transition: 1s; /* Время появления подсказки */
+    transition-delay: 0s;
+}
+.topPanel > [data-tooltip]::after {
+    left: 0px;
+}
+.topPanel > [data-tooltip]:hover::after {
+    top: 36px;
+}
+[data-tooltip]:hover::after {
+    opacity: 1; /* Показываем подсказку */
+    top: -50px; /* Положение подсказки */
+    transition-delay: 2s;
+}
+
 @media (max-width: 610px) {
     .container {
         display: block;
@@ -309,5 +344,12 @@ input[type="color"]::-webkit-color-swatch {
     .dockPanel {
         left: 0;
         right: 0;
+    }
+    .main-tools {
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+    [data-tooltip]::after {
+        display: none;
     }
 }

@@ -7,6 +7,17 @@ function clearBoard() {
         board.style.transform = `scale(1)`
     }, 150)
 }
+document.addEventListener('keydown', function(event) {
+    if (event.code == 'Delete') {
+        clearBoard()
+    }
+})
+
+document.addEventListener('keydown', function(event) {
+    if (event.code == 'KeyC' && (event.ctrlKey || event.metaKey)) {
+        copyLink()
+    }
+})
 
 function addImage(event) {
     let image = document.createElementNS('http://www.w3.org/2000/svg','image')
